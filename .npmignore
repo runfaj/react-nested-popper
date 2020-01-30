@@ -1,0 +1,10 @@
+# folders
+demo
+src
+
+# root files
+.babelrc
+.eslintrc.js
+.gitignore
+webpack.config.js
+yarn.lock
