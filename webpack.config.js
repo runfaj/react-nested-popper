@@ -18,7 +18,7 @@ module.exports = {
     compress: true,
     contentBase: false,
     hot: true,
-    port: 9000,
+    port: 8765,
     stats: {
       assets: false,
       children: false,
@@ -82,37 +82,34 @@ module.exports = {
               hmr: !useProductionBuild,
             },
           },
+          {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 2,
+              modules: {
+                localIdentName: '[name]---[local]---[hash:base64:5]',
+              },
+              sourceMap: true,
+            },
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              plugins: [
+                AutoPrefixerPlugin,
+                CSSNanoPlugin,
+              ],
+              sourceMap: true,
+              modules: true,
+            },
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              sourceMap: true,
+            },
+          },
         ]
-          .concat([
-            {
-              loader: 'css-loader',
-              options: {
-                importLoaders: 2,
-                modules: {
-                  localIdentName: '[name]---[local]---[hash:base64:5]',
-                },
-                sourceMap: true,
-              },
-            },
-            {
-              loader: 'postcss-loader',
-              options: {
-                plugins: [
-                  AutoPrefixerPlugin,
-                  CSSNanoPlugin,
-                ],
-                sourceMap: true,
-                modules: true,
-              },
-            },
-            {
-              loader: 'sass-loader',
-              options: {
-                sourceMap: true,
-                modules: true,
-              },
-            },
-          ]),
       },
     ],
   },

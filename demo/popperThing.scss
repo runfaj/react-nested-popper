@@ -1,0 +1,51 @@
+.popperContainer {
+  background-color: #ddd;
+  border-radius: 8px;
+  margin: 20px;
+  padding: 12px;
+}
+
+.target {
+  display: inline;
+}
+
+.content {
+  border-radius: 8px;
+  padding: 6px;
+
+  &[data-popper-placement^='top'] > .arrow {
+    bottom: -4px;
+  }
+
+  &[data-popper-placement^='bottom'] > .arrow {
+    top: -4px;
+  }
+
+  &[data-popper-placement^='left'] > .arrow {
+    right: -4px;
+  }
+
+  &[data-popper-placement^='right'] > .arrow {
+    left: -4px;
+  }
+
+  .arrow {
+    &, &::before {
+      height: 8px;
+      position: absolute;
+      width: 8px;
+      z-index: -1;
+    }
+
+    &::before {
+      content: '';
+      transform: rotate(45deg);
+    }
+  }
+
+  &.nested-0 { &, .arrow::before { background-color: #FFCC65; } }
+  &.nested-1 { &, .arrow::before { background-color: #E5FF65; } }
+  &.nested-2 { &, .arrow::before { background-color: #98FF65; } }
+  &.nested-3 { &, .arrow::before { background-color: #65FFCC; } }
+  &.nested-4 { &, .arrow::before { background-color: #FFA78C; } }
+}

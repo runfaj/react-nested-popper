@@ -1,0 +1,32 @@
+:global {
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body, #root {
+    background-color: #efefef;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+
+  button {
+    background-color: #65E5FF;
+    border: 1px solid #333;
+    border-radius: 3px;
+    color: #fff;
+    cursor: pointer;
+    margin-top: 20px;
+    outline: none;
+    padding: 4px 8px;
+  }
+}
+
+.app {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+}

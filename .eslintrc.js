@@ -52,7 +52,9 @@ module.exports = {
         functions: 'ignore', // this prevents "ESLint Autofix" from ADDING commas. Once we upgrade Node to support trailing commas in parameters we can eliminate this.
       },
     ],
-    'import/extensions': WARN,
+    'import/extensions': [WARN, {
+      js: 'never'
+    }],
     'import/order': WARN,
     'import/no-named-as-default': OFF,
     'import/no-unresolved': OFF, // have to disable due to webpack aliasing issues
