@@ -35,8 +35,8 @@ export default class Target extends React.Component {
 
 Target.propTypes = {
   // external props
-  innerRef: PropTypes.func,
   className: PropTypes.string,
+  innerRef: PropTypes.func,
 
   // internal props - these can't be required unless you want it to show to end user
   onClick: PropTypes.func,
@@ -44,7 +44,8 @@ Target.propTypes = {
 };
 Target.defaultProps = {
   className: '',
-  innerRef: () => {},
-  onClick: () => {},
-  targetRef: () => {},
+  innerRef: (el) => {},
+
+  onClick: (e) => {},
+  targetRef: (el) => {},
 };

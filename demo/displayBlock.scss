@@ -1,0 +1,33 @@
+.displayBlock {
+  background-color: #ddd;
+  border-radius: 8px;
+  margin: 20px;
+  padding: 12px;
+  max-width: 600px;
+  width: 100%;
+
+  .description {
+    padding-bottom: 12px;
+  }
+
+  .notes {
+    padding-top: 12px 
+  }
+  
+  .content {
+    display: flex;
+
+    .leftContent, .rightContent {
+      flex-grow: 1;
+    }
+
+    .leftContent {
+      padding-right: 6px;
+    }
+
+    .rightContent {
+      overflow-x: auto;
+      padding-left: 6px;
+    }
+  }
+}

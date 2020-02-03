@@ -4,6 +4,7 @@ import _ from 'lodash';
 
 import Target from './Target';
 import Content from './Content';
+import Queue from './Queue';
 
 export default class Popper extends React.Component {
   static className = 'react-nested-popper_Popper';
@@ -113,13 +114,17 @@ export default class Popper extends React.Component {
     }
   }
 
-  onContentOutsideClick = (e) => {
+  onContentOutsideClick = (contentInstance, e) => {
     if (!this.state.targetRef || !this.state.targetRef.contains(e.target)) {
       if (this.props.onOutsideClick) {
         this.props.onOutsideClick(e);
       }
       if (this.isManaged && this.props.closeOnOutsideClick) {
-        this.closeContent();
+        switch (this.props.outsideClickType) {
+          case 'group': Queue.destroyQueue(this.props.groupName); break;
+          case 'all': Queue.destroyQueue(true); break;
+          default: Queue.destroyLast(contentInstance, this.props.groupName);
+        }
       }
     }
   }
@@ -137,13 +142,7 @@ export default class Popper extends React.Component {
       return null;
     }
 
-    const {
-      children,
-      initiallyOpen,
-      targetToggle,
-      portalRoot,
-      ...rest
-    } = this.props;
+    const { children } = this.props;
 
     return (
       <>
@@ -155,22 +154,24 @@ export default class Popper extends React.Component {
 }
 
 Popper.propTypes = {
-  show: PropTypes.bool,
-  initiallyOpen: PropTypes.bool,
-  targetToggle: PropTypes.bool,
-  portalRoot: PropTypes.element, // container to attach portals to, defaults to body
-  onPopperWillClose: PropTypes.func,
-  onOutsideClick: PropTypes.func,
   closeOnOutsideClick: PropTypes.bool, // if managed, need to explicitly define this. Ignored if not managed
   groupName: PropTypes.string, // this is the queue group this popper will belong to
+  initiallyOpen: PropTypes.bool,
+  onOutsideClick: PropTypes.func,
+  onPopperWillClose: PropTypes.func,
+  outsideClickType: PropTypes.oneOf(['default', 'group', 'all']),
+  portalRoot: PropTypes.element, // container to attach portals to, defaults to body
+  show: PropTypes.bool,
+  targetToggle: PropTypes.bool,
 };
 Popper.defaultProps = {
-  show: null,
-  initiallyOpen: false,
-  targetToggle: false, // true to have target act as toggle instead of only open
-  portalRoot: null,
-  onPopperWillClose: () => {},
-  onOutsideClick: () => {},
   closeOnOutsideClick: false,
   groupName: 'global',
+  initiallyOpen: false,
+  onOutsideClick: (e) => {},
+  onPopperWillClose: () => {},
+  outsideClickType: 'default',
+  portalRoot: null,
+  show: null,
+  targetToggle: false, // true to have target act as toggle instead of only open
 };

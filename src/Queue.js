@@ -1,7 +1,10 @@
+import _ from 'lodash';
+
 const QueueStore = {};
 
 class Queue {
   debug = false;
+  pushing = {};
 
   constructor(queue, debug = false) {
     this.getQueue(queue);
@@ -33,6 +36,10 @@ class Queue {
       Object.keys(QueueStore).forEach(this.destroyQueue);
       return;
     }
+
+    if (this.pushing[queue]) {
+      return;
+    }
     
     // kill all objects
     const currQueue = this.getQueue(queue);
@@ -46,6 +53,26 @@ class Queue {
     this.log('destroy queue:', queue);
   }
 
+  /* added all the logic for the delayed pushing, but doesn't work if you
+  click on your own content. So, probably need to prevent all click outsides
+  and have the queue manage which one is actually clicked
+  */
+
+  destroyLast = (instance, queue = 'global') => {
+    if (this.pushing[queue]) {
+      return;
+    }
+    
+    const lowestInstance = _.last(this.getQueue(queue));
+    if (lowestInstance.id !== instance.id) {
+      return;
+    }
+
+    if (instance.componentWillDestroy) {
+      instance.componentWillDestroy();
+    }
+  }
+
   // instance methods
   unshift = (instance, queue = 'global') => {
     this.getQueue(queue).unshift(instance);
@@ -53,8 +80,10 @@ class Queue {
   }
 
   push = (instance, queue = 'global') => {
+    this.pushing[queue] = true;
     this.getQueue(queue).push(instance);
     this.log('push:', queue, instance.id);
+    this.clearPushing(queue);
   }
 
   pop = (queue = 'global') => {
@@ -81,6 +110,11 @@ class Queue {
       }
     });
   }
+
+  // misc methods
+  clearPushing = _.debounce((queue = 'global') => {
+    delete this.pushing[queue];
+  }, 250, { leading: false, trailing: true })
 }
 
 const QueueUtil = new Queue('global', true);

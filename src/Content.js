@@ -53,13 +53,13 @@ export default class Content extends React.Component {
     if (this.popperEl && this.props.targetRef && !this.popperInstance) {
       this.popperInstance = createPopper(this.props.targetRef, this.popperEl, this.props.popperOptions);
       Queue.push(this, this.props.queue);
-      document.addEventListener('click', this.onOutsideClick, true);
+      document.addEventListener('click', this.onOutsideClick);
     }
   }
 
   destroyPopperInstance() {
     if (this.popperInstance) {
-      document.removeEventListener('click', this.onOutsideClick, true);
+      document.removeEventListener('click', this.onOutsideClick);
       this.popperInstance.destroy();
       this.popperInstance = null;
       Queue.removeBy(this);
@@ -79,7 +79,7 @@ export default class Content extends React.Component {
 
   onOutsideClick = (e) => {
     if (!this.portalEl || !this.portalEl.contains(e.target)) {
-      this.props.onOutsideClick(e);
+      this.props.onOutsideClick(this, e);
     }
   }
 
@@ -92,6 +92,7 @@ export default class Content extends React.Component {
       <div
         className={this.props.className}
         ref={this.setPopperRef}
+        onClick={this.props.onClick}
       >
         {this.props.children}
         {this.props.includeArrow && (
@@ -118,38 +119,37 @@ export default class Content extends React.Component {
 
 Content.propTypes = {
   // external
-  className: PropTypes.string,
-  portalClassName: PropTypes.string,
-  innerRef: PropTypes.func,
-  portalRoot: PropTypes.element, // can be directly added, or comes from Popper
-  popperOptions: PropTypes.object,
-  usePortal: PropTypes.bool,
-  includeArrow: PropTypes.bool,
   arrowClassName: PropTypes.string,
-  // things to go directly on the portal container
   className: PropTypes.string,
-  style: PropTypes.string,
+  includeArrow: PropTypes.bool,
+  innerRef: PropTypes.func,
   onClick: PropTypes.func,
+  popperOptions: PropTypes.object,
+  portalClassName: PropTypes.string,
+  portalRoot: PropTypes.element, // can be directly added, or comes from Popper
+  usePortal: PropTypes.bool,
 
   // internal - these can't be required unless you want it to show to end user
-  show: PropTypes.bool,
-  targetRef: PropTypes.any,
   onComponentWillDestroy: PropTypes.func,
   onOutsideClick: PropTypes.func,
   queue: PropTypes.string,
+  show: PropTypes.bool,
+  targetRef: PropTypes.any,
 };
 Content.defaultProps = {
-  includeArrow: false,
   arrowClassName: '',
-  portalClassName: '',
   className: '',
-  innerRef: () => {},
+  includeArrow: false,
+  innerRef: (el) => {},
+  onClick: (e) => {},
   popperOptions: {},
+  portalClassName: '',
   portalRoot: null,
   usePortal: true,
+
+  onComponentWillDestroy: () => {},
+  onOutsideClick: (instance, e) => {},
+  queue: 'global',
   show: false,
   targetRef: null,
-  onComponentWillDestroy: () => {},
-  onOutsideClick: () => {},
-  queue: 'global',
 };

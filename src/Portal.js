@@ -52,11 +52,11 @@ export default class Portal extends React.Component {
 Portal.propTypes = {
   // all of these are internal
   className: PropTypes.string,
-  portalRoot: PropTypes.element, // can be directly added, or comes from Popper
   innerRef: PropTypes.func,
+  portalRoot: PropTypes.element, // can be directly added, or comes from Popper
 };
 Portal.defaultProps = {
   className: '',
+  innerRef: (el) => {},
   portalRoot: null,
-  innerRef: () => {},
 };

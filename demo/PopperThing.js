@@ -6,18 +6,7 @@ import styles from './popperThing.scss';
 
 const cx = classnames.bind(styles);
 
-const PopperThing = ({ text, children, ...rest }) => (
-  <div className={cx('popperContainer')}>
-    <div>{text}</div>
-    <PopperP
-      {...rest}
-    >
-      {children}
-    </PopperP>
-  </div>
-);
-
-const PopperP = ({
+const PopperThing = ({
   placement = 'bottom',
   closeOnOutsideClick = false,
   children,
