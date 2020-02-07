@@ -25,7 +25,7 @@ const App = () => (
       <li>full implementation of popper.js allowing all popper options</li>
       <li>support for portals to decouple the popper content</li>
     </ul>
-    <p>This library is an unstyled, functionality only library, so all of the examples below will demonstrate functionality and available options, combined with custom styling for this demo. You can find all available options and usage via the link above.</p>
+    <p>This library is an unstyled, functionality-only library, so all of the examples below will demonstrate functionality and available options, combined with custom styling for this demo. You can find all available options and usage via the link above.</p>
     
     <Example1 />
     <Example2 />

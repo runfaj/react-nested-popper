@@ -20,26 +20,6 @@ export default class Portal extends React.Component {
     this.portalRoot.removeChild(this.portalEl);
   }
 
-  // assignElementAttributes() {
-  //   if (!this.element) {
-  //     return;
-  //   }
-
-  //   // TODO possibly
-  //   const {
-  //     children,
-  //     innerRef,
-  //     portalRoot,
-  //     targetRef,
-  //     popperOptions,
-  //     ...rest
-  //   } = this.props;
-
-  //   Object.keys(rest).forEach(key => {
-  //     this.element[key] = rest[key];
-  //   });
-  // }
-
   get portalRoot() {
     return this.props.portalRoot || document.getElementsByTagName('body')[0];
   }

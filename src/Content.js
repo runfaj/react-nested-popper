@@ -20,13 +20,13 @@ export default class Content extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.show) {
+    if (this.props._show) {
       this.initPopperInstance();
     }
   }
 
   componentDidUpdate() {
-    if (this.props.show) {
+    if (this.props._show) {
       if (!this.popperInstance) {
         this.initPopperInstance();
       } else {
@@ -46,13 +46,13 @@ export default class Content extends React.Component {
 
   // called if queue wants to hide this popper
   componentWillDestroy() {
-    this.props.onComponentWillDestroy();
+    this.props._onComponentWillDestroy();
   }
 
   initPopperInstance() {
-    if (this.popperEl && this.props.targetRef && !this.popperInstance) {
-      this.popperInstance = createPopper(this.props.targetRef, this.popperEl, this.props.popperOptions);
-      Queue.push(this, this.props.queue);
+    if (this.popperEl && this.props._targetRef && !this.popperInstance) {
+      this.popperInstance = createPopper(this.props._targetRef, this.popperEl, this.props.popperOptions);
+      Queue._push(this, this.props._queue);
       document.addEventListener('click', this.onOutsideClick);
     }
   }
@@ -62,7 +62,7 @@ export default class Content extends React.Component {
       document.removeEventListener('click', this.onOutsideClick);
       this.popperInstance.destroy();
       this.popperInstance = null;
-      Queue.removeBy(this);
+      Queue._removeBy(this);
     }
   }
 
@@ -79,12 +79,12 @@ export default class Content extends React.Component {
 
   onOutsideClick = (e) => {
     if (!this.portalEl || !this.portalEl.contains(e.target)) {
-      this.props.onOutsideClick(this, e);
+      this.props._onOutsideClick(this, e);
     }
   }
 
   render() {
-    if (!this.props.targetRef || !this.props.show) {
+    if (!this.props._targetRef || !this.props._show) {
       return null;
     }
 
@@ -127,14 +127,14 @@ Content.propTypes = {
   popperOptions: PropTypes.object,
   portalClassName: PropTypes.string,
   portalRoot: PropTypes.element, // can be directly added, or comes from Popper
-  usePortal: PropTypes.bool,
+  usePortal: PropTypes.bool, // can be directly added, or comes from Popper
 
   // internal - these can't be required unless you want it to show to end user
-  onComponentWillDestroy: PropTypes.func,
-  onOutsideClick: PropTypes.func,
-  queue: PropTypes.string,
-  show: PropTypes.bool,
-  targetRef: PropTypes.any,
+  _onComponentWillDestroy: PropTypes.func,
+  _onOutsideClick: PropTypes.func,
+  _queue: PropTypes.string,
+  _show: PropTypes.bool,
+  _targetRef: PropTypes.any,
 };
 Content.defaultProps = {
   arrowClassName: '',
@@ -147,9 +147,9 @@ Content.defaultProps = {
   portalRoot: null,
   usePortal: true,
 
-  onComponentWillDestroy: () => {},
-  onOutsideClick: (instance, e) => {},
-  queue: 'global',
-  show: false,
-  targetRef: null,
+  _onComponentWillDestroy: () => {},
+  _onOutsideClick: (instance, e) => {},
+  _queue: 'global',
+  _show: false,
+  _targetRef: null,
 };

@@ -11,13 +11,7 @@ class Queue {
     this.debug = debug;
   }
 
-  log = (...msg) => {
-    if (this.debug) {
-      console.log('Queue:', ...msg, QueueStore);
-    }
-  }
-
-  // queue methods
+  // public queue methods
   getQueue = (queue = 'global') => {
     let newQueue = QueueStore[queue];
     if (newQueue) {
@@ -26,7 +20,7 @@ class Queue {
 
     newQueue = [];
     QueueStore[queue] = newQueue;
-    this.log('new queue:', queue);
+    this._log('new queue:', queue);
     return newQueue;
   }
 
@@ -50,15 +44,10 @@ class Queue {
       }
     }
     // we don't actually clear out the queue at this point - each component lifecycle should handle that
-    this.log('destroy queue:', queue);
+    this._log('destroy queue:', queue);
   }
 
-  /* added all the logic for the delayed pushing, but doesn't work if you
-  click on your own content. So, probably need to prevent all click outsides
-  and have the queue manage which one is actually clicked
-  */
-
-  destroyLast = (instance, queue = 'global') => {
+  _destroyLast = (instance, queue = 'global') => {
     if (this.pushing[queue]) {
       return;
     }
@@ -73,32 +62,16 @@ class Queue {
     }
   }
 
-  // instance methods
-  unshift = (instance, queue = 'global') => {
-    this.getQueue(queue).unshift(instance);
-    this.log('unshift:', queue, instance.id);
-  }
-
-  push = (instance, queue = 'global') => {
+  // internal methods
+  _push = (instance, queue = 'global') => {
+    // because onClickOutside can be called at the same time as a push, depending on context, we flag if a push is happening
     this.pushing[queue] = true;
     this.getQueue(queue).push(instance);
-    this.log('push:', queue, instance.id);
-    this.clearPushing(queue);
+    this._log('push:', queue, instance.id);
+    this._clearPushing(queue);
   }
 
-  pop = (queue = 'global') => {
-    const returnValue = this.getQueue(queue).pop();
-    this.log('pop:', queue);
-    return returnValue;
-  }
-
-  shift = (queue = 'global') => {
-    const returnValue = this.getQueue(queue).shift();
-    this.log('shift:', queue);
-    return returnValue;
-  }
-
-  removeBy = (instance) => {
+  _removeBy = (instance) => {
     const { id } = instance;
 
     Object.keys(QueueStore).forEach(key => {
@@ -106,17 +79,22 @@ class Queue {
       const idx = items.findIndex(item => item.id === id);
       if (idx > -1) {
         items.splice(idx, 1);
-        this.log('removeBy:', key, instance.id);
+        this._log('removeBy:', key, instance.id);
       }
     });
   }
 
-  // misc methods
-  clearPushing = _.debounce((queue = 'global') => {
+  _clearPushing = _.debounce((queue = 'global') => {
     delete this.pushing[queue];
   }, 250, { leading: false, trailing: true })
+
+  _log = (...msg) => {
+    if (this.debug) {
+      console.log('Queue:', ...msg, QueueStore);
+    }
+  }
 }
 
-const QueueUtil = new Queue('global', true);
+const QueueUtil = new Queue('global');
 
 export default QueueUtil;

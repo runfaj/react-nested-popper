@@ -71,17 +71,17 @@ export default class Popper extends React.Component {
       let newProps = {};
       if (child.type.className === Target.className) {
         newProps = {
-          onClick: this.onTargetClick,
-          targetRef: this.setTargetRef,
+          _onClick: this.onTargetClick,
+          _targetRef: this.setTargetRef,
         };
       } else if (child.type.className === Content.className) {
         newProps = {
           portalRoot: this.props.portalRoot,
-          show: this.show,
-          targetRef: this.state.targetRef,
-          onComponentWillDestroy: this.onContentWillDestroy,
-          onOutsideClick: this.onContentOutsideClick,
-          queue: this.props.groupName,
+          _show: this.show,
+          _targetRef: this.state.targetRef,
+          _onComponentWillDestroy: this.onContentWillDestroy,
+          _onOutsideClick: this.onContentOutsideClick,
+          _queue: this.props.groupName,
         };
       }
       return React.cloneElement(child, newProps);
@@ -117,13 +117,13 @@ export default class Popper extends React.Component {
   onContentOutsideClick = (contentInstance, e) => {
     if (!this.state.targetRef || !this.state.targetRef.contains(e.target)) {
       if (this.props.onOutsideClick) {
-        this.props.onOutsideClick(e);
+        this.props.onOutsideClick(contentInstance, e);
       }
       if (this.isManaged && this.props.closeOnOutsideClick) {
         switch (this.props.outsideClickType) {
           case 'group': Queue.destroyQueue(this.props.groupName); break;
           case 'all': Queue.destroyQueue(true); break;
-          default: Queue.destroyLast(contentInstance, this.props.groupName);
+          default: Queue._destroyLast(contentInstance, this.props.groupName);
         }
       }
     }
@@ -163,6 +163,7 @@ Popper.propTypes = {
   portalRoot: PropTypes.element, // container to attach portals to, defaults to body
   show: PropTypes.bool,
   targetToggle: PropTypes.bool,
+  usePortal: PropTypes.bool,
 };
 Popper.defaultProps = {
   closeOnOutsideClick: false,
@@ -174,4 +175,5 @@ Popper.defaultProps = {
   portalRoot: null,
   show: null,
   targetToggle: false, // true to have target act as toggle instead of only open
+  usePortal: true,
 };

@@ -12,8 +12,8 @@ export default class Target extends React.Component {
     if (this.props.innerRef) {
       this.props.innerRef(el);
     }
-    if (this.props.targetRef) {
-      this.props.targetRef(el);
+    if (this.props._targetRef) {
+      this.props._targetRef(el);
     }
   }
 
@@ -24,7 +24,7 @@ export default class Target extends React.Component {
       <div
         className={this.props.className}
         ref={el => this.setRef(el)}
-        onClick={this.props.onClick}
+        onClick={this.props._onClick}
         {...rest}
       >
         {this.props.children}
@@ -39,13 +39,13 @@ Target.propTypes = {
   innerRef: PropTypes.func,
 
   // internal props - these can't be required unless you want it to show to end user
-  onClick: PropTypes.func,
-  targetRef: PropTypes.func,
+  _onClick: PropTypes.func,
+  _targetRef: PropTypes.func,
 };
 Target.defaultProps = {
   className: '',
   innerRef: (el) => {},
 
-  onClick: (e) => {},
-  targetRef: (el) => {},
+  _onClick: (e) => {},
+  _targetRef: (el) => {},
 };

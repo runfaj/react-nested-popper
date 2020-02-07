@@ -9,8 +9,15 @@
     background-color: #efefef;
     height: 100%;
     margin: 0;
-    padding: 0;
     width: 100%;
+  }
+
+  html, #root {
+    padding: 0;
+  }
+
+  body {
+    padding: 20px;
   }
 
   button {
