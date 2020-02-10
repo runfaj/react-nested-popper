@@ -12,11 +12,13 @@ const PopperThing = ({
   children,
   nestedLevel = 0,
   groupName,
+  noPortal = false,
 }) => (
   <Popper
     targetToggle
     closeOnOutsideClick={closeOnOutsideClick}
     groupName={groupName}
+    usePortal={!noPortal}
   >
     <Target className={cx('target')}><PopperTarget /></Target>
     <Content

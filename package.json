@@ -1,6 +1,6 @@
 {
   "name": "react-nested-popper",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A react library based on popper.js that supports nested poppers and proper context binding.",
   "main": "dist/lib.js",
   "scripts": {
@@ -10,11 +10,17 @@
     "post-deploy": "rm dist/demo.js dist/index.html",
     "publish-demo": "npm run build && npm run deploy && npm run post-deploy",
     "prepublish": "npm run build",
-    "postpublish": "npm run publish-demo"
+    "postpublish": "npm run publish-demo",
+    "test": "jest"
+  },
+  "jest": {
+    "setupFilesAfterEnv": [
+      "./src/tests/setup.js"
+    ]
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Growmies/react-nested-popper.git"
+    "url": "git+https://github.com/runfaj/react-nested-popper.git"
   },
   "keywords": [
     "react",
@@ -24,12 +30,12 @@
     "outside",
     "context"
   ],
-  "author": "Grow, Inc",
+  "author": "Stuart Roskelley",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Growmies/react-nested-popper/issues"
+    "url": "https://github.com/runfaj/react-nested-popper/issues"
   },
-  "homepage": "https://github.com/Growmies/react-nested-popper#readme",
+  "homepage": "https://github.com/runfaj/react-nested-popper#readme",
   "peerDependencies": {
     "react": "^16.x",
     "react-dom": "^16.x"
@@ -38,7 +44,11 @@
     "@popperjs/core": "^2.0.3",
     "classnames": "^2.2.6",
     "lodash": "^4.17.15",
-    "prop-types": "^15.7.2"
+    "mobx": "^5.15.4",
+    "mobx-react": "5",
+    "mobx-state-tree": "^3.15.0",
+    "prop-types": "^15.7.2",
+    "react-router-dom": "^5.1.2"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
@@ -58,14 +68,18 @@
     "@babel/plugin-proposal-throw-expressions": "^7.0.0",
     "@babel/plugin-syntax-dynamic-import": "^7.0.0",
     "@babel/plugin-syntax-import-meta": "^7.0.0",
+    "@babel/plugin-transform-runtime": "^7.8.3",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
     "autoprefixer": "^9.7.4",
     "babel-eslint": "^10.0.3",
+    "babel-jest": "^25.1.0",
     "babel-loader": "^8.0.6",
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^3.4.2",
     "cssnano": "^4.1.10",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.2",
     "eslint": "^6.8.0",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-import-resolver-webpack": "^0.12.1",
@@ -75,11 +89,15 @@
     "eslint-plugin-react": "^7.18.0",
     "gh-pages": "^2.2.0",
     "html-webpack-plugin": "^3.2.0",
+    "jest": "^25.1.0",
+    "jquery": "^3.4.1",
     "mini-css-extract-plugin": "^0.9.0",
     "node-sass": "^4.13.1",
     "postcss-loader": "^3.0.0",
     "react": "^16.12.0",
+    "react-addons-test-utils": "^15.6.2",
     "react-dom": "^16.12.0",
+    "react-test-renderer": "^16.12.0",
     "sass-loader": "^8.0.2",
     "terser-webpack-plugin": "^2.3.3",
     "webpack": "^4.41.5",

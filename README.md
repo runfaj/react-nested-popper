@@ -96,13 +96,13 @@ With that in mind, here's the options available for the three components:
     <td>portalRoot</td>
     <td>'<body>'</td>
     <td>both</td>
-    <td>If you want your portal to appear somewhere other than the end of the body, specify the target dom element to put it in. This prop can also be set on the Content if desired.</td>
+    <td>If you want your portal to appear somewhere other than the end of the body, specify the target dom element to put it in.</td>
   </tr>
   <tr>
     <td>usePortal</td>
     <td>true</td>
     <td>both</td>
-    <td>Set to false to not use a portal and just do the popper in the same element location. This prop can also be set on the Content if desired.</td>
+    <td>Set to false to not use a portal and just do the popper in the same element location.</td>
   </tr>
   <tr>
     <td>onPopperWillClose</td>
@@ -189,16 +189,6 @@ With that in mind, here's the options available for the three components:
     <td>''</td>
     <td>Classname string to add to the portal element.</td>
   </tr>
-  <tr>
-    <td>portalRoot</td>
-    <td>null</td>
-    <td>See prop on Popper. Recommended to keep there unless you need it here for some reason.</td>
-  </tr>
-  <tr>
-    <td>usePortal</td>
-    <td>true</td>
-    <td>See prop on Popper. Recommended to keep there unless you need it here for some reason.</td>
-  </tr>
 </table>
 
 <br />
@@ -232,13 +222,3 @@ Thanks to:
   - <a href="https://github.com/robskidmore" target="_blank">robskidmore</a>, for helping plan out this package
   - <a href="https://github.com/runfaj" target="_blank">runfaj</a>, for creating this package
   - All contributors (code, issues, documentation, etc.) for helping make this package continually better
-
-potential future things:
-  overlay component
-  need to assign props to portal element
-  https://itnext.io/diy-react-popups-with-popper-js-2-c76ff6b7fc5d (focus trapping)
-
-TODO:
-  update demo to include react-router and MST inject instances, also showing how to close queues manually
-  cleanup all the files to have documentation, and _ in front of internal methods
-  update this file

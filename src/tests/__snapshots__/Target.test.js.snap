@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Target component renders with multiple children 1`] = `
+<div
+  className=""
+  onClick={[Function]}
+>
+  <div>
+    react-nested-popper
+  </div>
+  <div>
+    react-nested-popper
+  </div>
+</div>
+`;
+
+exports[`Target component renders with nested text 1`] = `
+<div
+  className=""
+  onClick={[Function]}
+>
+  react-nested-popper
+</div>
+`;

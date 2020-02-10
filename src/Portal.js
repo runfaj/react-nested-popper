@@ -2,6 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 
+/*  the implementation of this is a pretty standard portal. The only difference is we provide the ref for 
+    outside click handling and allow adding a class name. This component is completely internal.
+*/
 export default class Portal extends React.Component {
   portalEl = document.createElement('div');
 
@@ -29,6 +32,7 @@ export default class Portal extends React.Component {
   }
 }
 
+// no docs on these, all internal
 Portal.propTypes = {
   // all of these are internal
   className: PropTypes.string,

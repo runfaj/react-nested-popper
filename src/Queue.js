@@ -1,8 +1,8 @@
 import _ from 'lodash';
 
-const QueueStore = {};
+export const QueueStore = {};
 
-class Queue {
+export class Queue {
   debug = false;
   pushing = {};
 
@@ -11,7 +11,8 @@ class Queue {
     this.debug = debug;
   }
 
-  // public queue methods
+  /* ******** public queue methods ******** */
+  /*  gets existing queue by queue name, or creates new empty queue */
   getQueue = (queue = 'global') => {
     let newQueue = QueueStore[queue];
     if (newQueue) {
@@ -24,18 +25,21 @@ class Queue {
     return newQueue;
   }
 
+  /*  destroy one or all queues. "true" will kill all, otherwise will destroy by given name */
   destroyQueue = (queue = true) => {
-    // true is to "kill all queues"
     if (queue === true) {
       Object.keys(QueueStore).forEach(this.destroyQueue);
       return;
     }
 
+    // if we are pushing to a queue, we don't want to remove anything. Because technically click outside and target
+    // click fire together, we have to cancel the destroy that happens in that scenario
     if (this.pushing[queue]) {
       return;
     }
     
-    // kill all objects
+    // loop through all objects in given queue and tell them to kill themselves (that sounds so evil)
+    // we let the component lifecycles handle the actual removing so we aren't breaking react flows
     const currQueue = this.getQueue(queue);
     for (let i = currQueue.length - 1; i >= 0; i -= 1) {
       const instance = currQueue[i];
@@ -43,15 +47,21 @@ class Queue {
         instance.componentWillDestroy();
       }
     }
-    // we don't actually clear out the queue at this point - each component lifecycle should handle that
+    
     this._log('destroy queue:', queue);
   }
 
+  /* ******** internal methods ******** */
+  /*  kind of like a pop method, this will destroy the last instance on a given queue */
   _destroyLast = (instance, queue = 'global') => {
+    // see notes in destroyQueue for this pushing flag and the componentWillDestroy
     if (this.pushing[queue]) {
       return;
     }
     
+    // get the last instance. We also have to provide an instance to this method because multiple instances could
+    // trigger this method on outside click at the same time, so we want to only allow the highest visible instance
+    // to destroy itself
     const lowestInstance = _.last(this.getQueue(queue));
     if (lowestInstance.id !== instance.id) {
       return;
@@ -62,7 +72,7 @@ class Queue {
     }
   }
 
-  // internal methods
+  /*  push an instance onto a given queue, making it the highest visible in the stack */
   _push = (instance, queue = 'global') => {
     // because onClickOutside can be called at the same time as a push, depending on context, we flag if a push is happening
     this.pushing[queue] = true;
@@ -71,6 +81,9 @@ class Queue {
     this._clearPushing(queue);
   }
 
+  /*  this will manually splice an instance out of the queue. This is called by the component lifecycle, so this
+      effectively is a cleanup method
+  */
   _removeBy = (instance) => {
     const { id } = instance;
 
@@ -84,10 +97,14 @@ class Queue {
     });
   }
 
+  /*  after we push an instance, we need to clear the pushing state. This is debounced so we only clear after all
+      possible pushing has completed
+  */
   _clearPushing = _.debounce((queue = 'global') => {
     delete this.pushing[queue];
   }, 250, { leading: false, trailing: true })
 
+  /*  logging function. Just enable the debug flag on the queue */
   _log = (...msg) => {
     if (this.debug) {
       console.log('Queue:', ...msg, QueueStore);
@@ -95,6 +112,7 @@ class Queue {
   }
 }
 
+// we don't export the actual queue util, since we want to always init the package with a global queue available
 const QueueUtil = new Queue('global');
 
 export default QueueUtil;

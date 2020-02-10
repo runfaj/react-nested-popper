@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 
 import Target from './Target';
 import Content from './Content';
@@ -14,10 +13,9 @@ export default class Popper extends React.Component {
 
     this.validChildren = this.checkChildren(props.children);
     this.isManaged = this.checkIsManaged(props);
-    this.id = _.uniqueId();
 
     this.state = {
-      show: !!props.initiallyOpen,
+      show: !!props.initiallyOpen, // managed popper uses state, otherwise user provides props.show
       targetRef: null, // we do this in the state instead of regular this assignment because we need to re-trigger a render when this updates
     };
   }
@@ -25,13 +23,18 @@ export default class Popper extends React.Component {
   shouldComponentUpdate(nextProps) {
     this.validChildren = this.checkChildren(nextProps.children);
     this.isManaged = this.checkIsManaged(nextProps);
+    // don't bother updating if user changed the children to be invalid
     return this.validChildren;
   }
 
+  /* get the show state */
   get show() {
     return this.isManaged ? this.state.show : this.props.show;
   }
 
+  /*  Checks children to find the target component instance
+      We only grab the first one found. Any other ones after that will be invalid, so we ignore them.
+  */
   getTargetComponent(children) {
     let comp = null;
     React.Children.forEach(children, child => {
@@ -42,6 +45,9 @@ export default class Popper extends React.Component {
     return comp;
   }
 
+  /*  Checks children to find the content component instance
+      We only grab the first one found. Any other ones after that will be invalid, so we ignore them.
+  */
   getContentComponent(children) {
     let comp = null;
     React.Children.forEach(children, child => {
@@ -52,6 +58,7 @@ export default class Popper extends React.Component {
     return comp;
   }
 
+  /*  logs an error if children are invalid and returns valid state */
   checkChildren(children) {
     const valid = this.getTargetComponent(children) && this.getContentComponent(children);
 
@@ -62,10 +69,14 @@ export default class Popper extends React.Component {
     return valid;
   }
 
+  /* see if popper is managed or controlled based on given props */
   checkIsManaged(props) {
     return typeof props.show === 'undefined' || props.show === null;
   }
 
+  /*  our target and content children must be internally modified in order for our queueing and binding
+      to work properly. This adds those internal props to the children
+  */
   modifyChildren(children) {
     return React.Children.map(children, child => {
       let newProps = {};
@@ -76,7 +87,8 @@ export default class Popper extends React.Component {
         };
       } else if (child.type.className === Content.className) {
         newProps = {
-          portalRoot: this.props.portalRoot,
+          _portalRoot: this.props.portalRoot,
+          _usePortal: this.props.usePortal,
           _show: this.show,
           _targetRef: this.state.targetRef,
           _onComponentWillDestroy: this.onContentWillDestroy,
@@ -88,6 +100,9 @@ export default class Popper extends React.Component {
     });
   }
 
+  /*  tracks the element ref to the target. This is used to bind popperjs to the target, but also to trigger a
+      re-render when this is available so the content can initialize properly
+  */
   setTargetRef = (el) => {
     if (!el) {
       return;
@@ -100,12 +115,14 @@ export default class Popper extends React.Component {
     });
   }
 
+  /* 'nuff said */
   closeContent = () => {
     this.setState({
       show: false,
     });
   }
 
+  /* if managed, this will set the show state accordingly */
   onTargetClick = () => {
     if (this.isManaged) {
       this.setState(prevState => ({
@@ -114,11 +131,15 @@ export default class Popper extends React.Component {
     }
   }
 
+  /*  when we click outside the content, we need to handle that event accordingly */
   onContentOutsideClick = (contentInstance, e) => {
+    // if the clicked thing contains our target, we don't bother doing anything, since onTargetClick handles that
     if (!this.state.targetRef || !this.state.targetRef.contains(e.target)) {
+      // convenience function in case the user needs it for whatever reason
       if (this.props.onOutsideClick) {
         this.props.onOutsideClick(contentInstance, e);
       }
+      // if we're managing the content, we get to control the queue, based on given props
       if (this.isManaged && this.props.closeOnOutsideClick) {
         switch (this.props.outsideClickType) {
           case 'group': Queue.destroyQueue(this.props.groupName); break;
@@ -129,6 +150,9 @@ export default class Popper extends React.Component {
     }
   }
 
+  /*  if something this going to trigger the content to be destroyed (like killing it in the queue), we need to
+      sync that here, or provide that event to the user
+  */
   onContentWillDestroy = () => {
     if (this.isManaged) {
       this.closeContent();
@@ -153,14 +177,15 @@ export default class Popper extends React.Component {
   }
 }
 
+// see docs for definitions of each prop here
 Popper.propTypes = {
-  closeOnOutsideClick: PropTypes.bool, // if managed, need to explicitly define this. Ignored if not managed
-  groupName: PropTypes.string, // this is the queue group this popper will belong to
+  closeOnOutsideClick: PropTypes.bool,
+  groupName: PropTypes.string,
   initiallyOpen: PropTypes.bool,
   onOutsideClick: PropTypes.func,
   onPopperWillClose: PropTypes.func,
   outsideClickType: PropTypes.oneOf(['default', 'group', 'all']),
-  portalRoot: PropTypes.element, // container to attach portals to, defaults to body
+  portalRoot: PropTypes.element,
   show: PropTypes.bool,
   targetToggle: PropTypes.bool,
   usePortal: PropTypes.bool,
@@ -174,6 +199,6 @@ Popper.defaultProps = {
   outsideClickType: 'default',
   portalRoot: null,
   show: null,
-  targetToggle: false, // true to have target act as toggle instead of only open
+  targetToggle: false,
   usePortal: true,
 };

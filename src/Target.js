@@ -5,10 +5,12 @@ import _ from 'lodash';
 export default class Target extends React.Component {
   static className = 'react-nested-popper_Target';
 
-  elementRef = null;
 
+  /*  tracks ref so popperjs can be bound to it. Also provide to user if they want it.
+      We wouldn't even need this component, but we need to guarantee a ref to the target,
+      so we enforce this component.
+  */
   setRef(el) {
-    this.elementRef = el;
     if (this.props.innerRef) {
       this.props.innerRef(el);
     }
@@ -33,6 +35,7 @@ export default class Target extends React.Component {
   }
 }
 
+// see docs for definitions of each external prop here
 Target.propTypes = {
   // external props
   className: PropTypes.string,

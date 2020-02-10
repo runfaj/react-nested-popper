@@ -3,7 +3,11 @@ import classnames from 'classnames/bind';
 
 import PopperThing from './PopperThing';
 import DisplayBlock from './DisplayBlock';
-import { Popper, Target, Content } from '../src';
+import { Popper, Target, Content, Queue } from '../src';
+
+import ContextExample from './ContextExample';
+import MobxExample from './MobxExample';
+import ReactRouterExample from './ReactRouterExample';
 
 import styles from './app.scss';
 
@@ -32,8 +36,13 @@ const App = () => (
     <Example3 />
     <Example4 />
     <Example5 />
-    <p>react-router example...</p>
-    <p>mobx inject example...</p>
+    <Example6 />
+    <Example7 />
+    <Example8 />
+    <Example9 />
+    <Example10 />
+    
+    <p>See the github page (link at top) for documentation and happy...popping? 😆<br /><br /></p>
   </div>
 );
 
@@ -241,5 +250,96 @@ return (
     />
   );
 };
+
+const Example6 = () => (
+  <DisplayBlock
+    description="Here's an example that is the same as the first example, but doesn't use a portal."
+    example={(
+      <PopperThing noPortal />
+    )}
+    code={(
+      `<Popper
+  targetToggle
+  usePortal={false}
+>
+  <Target><TargetContent /></Target>
+  <Content
+    includeArrow
+    popperOptions={...}
+  >
+    <PopperContent />
+  </Content>
+</Popper>`
+    )}
+  />
+);
+
+const Example7 = () => (
+  <DisplayBlock
+    description="This popper uses context with a consumer inside the portal popper content."
+    example={(
+      <ContextExample />
+    )}
+    code="See github repo for demo/ContextExample.js"
+  />
+);
+
+const Example8 = () => (
+  <DisplayBlock
+    description="This portal popper uses a mobx-state-tree store with mobx-react 5 provider/inject to increment a store value from the content."
+    note="This was one of the use cases that prompted creating this package, as other popper libraries all threw errors in this scenario."
+    example={(
+      <MobxExample />
+    )}
+    code="See github repo for demo/MobxExample.js"
+  />
+);
+
+const Example9 = () => (
+  <DisplayBlock
+    description="This portal popper contains a react-router-dom NavLink without throwing errors."
+    note="This was one of the use cases that prompted creating this package, as other popperlibraries all threw errors in this scenario."
+    example={(
+      <ReactRouterExample />
+    )}
+    code="See github repo for demo/ReactRouterExample.js"
+  />
+);
+
+const Example10 = () => (
+  <DisplayBlock
+    description={(
+      <div>
+        You already got a taste of queues in a previous example with the nested poppers and clicking outside. You can also manually kill a whole queue of poppers if you want.
+        <br /><br />
+        Open the 3 poppers belonging to the same group below at the same time. Then, click the "close all" button to see the queue cleared out.
+      </div>
+    )}
+    example={(
+      <>
+        <div><PopperThing groupName="example10" placement="right" /></div>
+        <div><PopperThing groupName="example10" placement="right" /></div>
+        <div><PopperThing groupName="example10" placement="right" /></div>
+        <div><button onClick={() => Queue.destroyQueue('example10')}>Close All</button></div>
+      </>
+    )}
+    code={(
+      `<Popper targetToggle>
+  <Target><TargetContent /></Target>
+  <Content
+    includeArrow
+    popperOptions={{
+      modifiers: [{
+        name: 'offset',
+        options: { offset: [0, 10] },
+      }],
+    }}
+  >
+    <PopperContent />
+  </Content>
+</Popper>`
+    )}
+  />
+);
 
 export default App;
