@@ -95,6 +95,7 @@ With that in mind, here's the options available for the three components:
   <tr>
     <td>portalClassName</td>
     <td>''</td>
+    <td>both</td>
     <td>Classname string to add to the portal element.</td>
   </tr>
   <tr>
