@@ -87,6 +87,7 @@ export default class Popper extends React.Component {
         };
       } else if (child.type.className === Content.className) {
         newProps = {
+          _portalClassName: this.props.portalClassName,
           _portalRoot: this.props.portalRoot,
           _usePortal: this.props.usePortal,
           _show: this.show,
@@ -185,6 +186,7 @@ Popper.propTypes = {
   onOutsideClick: PropTypes.func,
   onPopperWillClose: PropTypes.func,
   outsideClickType: PropTypes.oneOf(['default', 'group', 'all']),
+  portalClassName: PropTypes.string,
   portalRoot: PropTypes.element,
   show: PropTypes.bool,
   targetToggle: PropTypes.bool,
@@ -197,6 +199,7 @@ Popper.defaultProps = {
   onOutsideClick: (e) => {},
   onPopperWillClose: () => {},
   outsideClickType: 'default',
+  portalClassName: '',
   portalRoot: null,
   show: null,
   targetToggle: false,

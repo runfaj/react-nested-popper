@@ -120,7 +120,7 @@ export default class Content extends React.Component {
       return (
         <Portal
           portalRoot={this.props._portalRoot}
-          className={this.props.portalClassName}
+          className={this.props._portalClassName}
           innerRef={this.setPortalRef}
         >
           {popper}
@@ -141,11 +141,11 @@ Content.propTypes = {
   innerRef: PropTypes.func,
   onClick: PropTypes.func,
   popperOptions: PropTypes.object,
-  portalClassName: PropTypes.string,
   
   // internal - these can't be required otherwise will show error to end user
   _onComponentWillDestroy: PropTypes.func,
   _onOutsideClick: PropTypes.func,
+  _portalClassName: PropTypes.string,
   _portalRoot: PropTypes.element,
   _queue: PropTypes.string,
   _show: PropTypes.bool,
@@ -159,10 +159,10 @@ Content.defaultProps = {
   innerRef: (el) => {},
   onClick: (e) => {},
   popperOptions: {},
-  portalClassName: '',
   
   _onComponentWillDestroy: () => {},
   _onOutsideClick: (instance, e) => {},
+  _portalClassName: '',
   _portalRoot: null,
   _queue: 'global',
   _show: false,

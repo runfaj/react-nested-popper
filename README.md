@@ -93,6 +93,11 @@ With that in mind, here's the options available for the three components:
     <td>Method called any time a popper is closed by clicking outside. Usually not needed unless a controlled popper.</td>
   </tr>
   <tr>
+    <td>portalClassName</td>
+    <td>''</td>
+    <td>Classname string to add to the portal element.</td>
+  </tr>
+  <tr>
     <td>portalRoot</td>
     <td>'<body>'</td>
     <td>both</td>
@@ -183,11 +188,6 @@ With that in mind, here's the options available for the three components:
     <td>popperOptions</td>
     <td>{}</td>
     <td>Standard object of popper options as outlined by <a href="https://popper.js.org/docs/v2/tutorial/" target="_blank">popper.js</a>.</td>
-  </tr>
-  <tr>
-    <td>portalClassName</td>
-    <td>''</td>
-    <td>Classname string to add to the portal element.</td>
   </tr>
 </table>
 
