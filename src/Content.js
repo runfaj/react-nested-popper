@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { createPopper } from '@popperjs/core';
-import _ from 'lodash';
+import _uniqueId from 'lodash/uniqueId';
 
 import Queue from './Queue';
 import Portal from './Portal';
@@ -17,7 +17,7 @@ export default class Content extends React.Component {
     super(props);
 
     // we add a unique id so the queue can easily find instances as needed
-    this.id = _.uniqueId();
+    this.id = _uniqueId();
   }
 
   componentDidMount() {

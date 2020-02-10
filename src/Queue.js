@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _debounce from 'lodash/debounce';
 
 export const QueueStore = {};
 
@@ -62,7 +62,8 @@ export class Queue {
     // get the last instance. We also have to provide an instance to this method because multiple instances could
     // trigger this method on outside click at the same time, so we want to only allow the highest visible instance
     // to destroy itself
-    const lowestInstance = _.last(this.getQueue(queue));
+    const queueInstance = this.getQueue(queue);
+    const lowestInstance = queueInstance[queueInstance.length - 1];
     if (lowestInstance.id !== instance.id) {
       return;
     }
@@ -100,7 +101,7 @@ export class Queue {
   /*  after we push an instance, we need to clear the pushing state. This is debounced so we only clear after all
       possible pushing has completed
   */
-  _clearPushing = _.debounce((queue = 'global') => {
+  _clearPushing = _debounce((queue = 'global') => {
     delete this.pushing[queue];
   }, 250, { leading: false, trailing: true })
 

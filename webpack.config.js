@@ -109,7 +109,7 @@ module.exports = {
               sourceMap: true,
             },
           },
-        ]
+        ],
       },
     ],
   },

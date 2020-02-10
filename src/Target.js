@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+import _omit from 'lodash/omit';
 
 export default class Target extends React.Component {
   static className = 'react-nested-popper_Target';
@@ -20,7 +20,7 @@ export default class Target extends React.Component {
   }
 
   render() {
-    const rest = _.omit(this.props, _.keys(Target.propTypes));
+    const rest = _omit(this.props, Object.keys(Target.propTypes));
 
     return (
       <div
