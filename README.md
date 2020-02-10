@@ -35,7 +35,7 @@ import { Popper, Target, Content } from 'react-nested-popper';
 </Popper>
 ```
 
-_Note 1: The Popper must always have 1 Target and 1 Content_
+_Note 1: The Popper must always have 1 Target and 1 Content_\
 _Note 2: react and react-dom are required peer dependencies_
 
 ## Options
