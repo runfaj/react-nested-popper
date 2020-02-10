@@ -16,7 +16,7 @@ const cx = classnames.bind(styles);
 const App = () => (
   <div className={cx('app')}>
     <h1>react-nested-popper</h1>
-    <p><a href="https://github.com/Growmies/react-nested-popper">https://github.com/Growmies/react-nested-popper</a></p>
+    <p><a href="https://github.com/runfaj/react-nested-popper">https://github.com/runfaj/react-nested-popper</a></p>
     <p>
       react-nested-popper is a react library based on V2
       {' '}
