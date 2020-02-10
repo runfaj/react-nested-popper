@@ -224,3 +224,7 @@ Thanks to:
   - <a href="https://github.com/robskidmore" target="_blank">robskidmore</a>, for helping plan out this package
   - <a href="https://github.com/runfaj" target="_blank">runfaj</a>, for creating this package
   - All contributors (code, issues, documentation, etc.) for helping make this package continually better
+
+## FAQ
+
+- **What's with all the weird dependencies?** Nearly all the dependencies listed are for the demo. The webpack bundle splits out to where the only things that are actually used in this package are a couple lodash methods and the popperjs library. react and react-dom are not included as they are peer dependencies.
