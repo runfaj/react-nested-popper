@@ -39,6 +39,7 @@ module.exports = {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
     pathinfo: false,
+    libraryTarget: 'umd',
   },
   optimization: (!useProductionBuild
     ? {
