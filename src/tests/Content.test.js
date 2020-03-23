@@ -16,7 +16,6 @@ describe('Content component', () => {
     props = {
       _targetRef: document.createElement('div'),
       _onOutsideClick: jest.fn(),
-      
     };
   });
 
@@ -52,12 +51,12 @@ describe('Content component', () => {
 
   it('renders portal and no-portal', () => {
     const componentWithPortal = mount(
-      <Content _targetRef={props._targetRef} _show portalClassName="portal">
+      <Content _targetRef={props._targetRef} _show _portalClassName="portal">
         react-nested-popper
       </Content>
     );
     const componentNoPortal = mount(
-      <Content _targetRef={props._targetRef} _show _usePortal={false} portalClassName="portal">
+      <Content _targetRef={props._targetRef} _show _usePortal={false} _portalClassName="portal">
         react-nested-popper
       </Content>
     );

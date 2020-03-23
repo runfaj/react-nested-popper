@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import Target from './Target';
 import Content from './Content';
-import Queue from './Queue';
+import Stack from './Stack';
 
 export default class Popper extends React.Component {
   static className = 'react-nested-popper_Popper';
@@ -74,7 +74,7 @@ export default class Popper extends React.Component {
     return typeof props.show === 'undefined' || props.show === null;
   }
 
-  /*  our target and content children must be internally modified in order for our queueing and binding
+  /*  our target and content children must be internally modified in order for our stacking and binding
       to work properly. This adds those internal props to the children
   */
   modifyChildren(children) {
@@ -87,14 +87,14 @@ export default class Popper extends React.Component {
         };
       } else if (child.type.className === Content.className) {
         newProps = {
-          _portalClassName: this.props.portalClassName,
-          _portalRoot: this.props.portalRoot,
-          _usePortal: this.props.usePortal,
-          _show: this.show,
-          _targetRef: this.state.targetRef,
           _onComponentWillDestroy: this.onContentWillDestroy,
           _onOutsideClick: this.onContentOutsideClick,
-          _queue: this.props.groupName,
+          _portalClassName: this.props.portalClassName,
+          _portalRoot: this.props.portalRoot,
+          _show: this.show,
+          _stack: this.props.groupName,
+          _targetRef: this.state.targetRef,
+          _usePortal: this.props.usePortal,
         };
       }
       return React.cloneElement(child, newProps);
@@ -140,18 +140,18 @@ export default class Popper extends React.Component {
       if (this.props.onOutsideClick) {
         this.props.onOutsideClick(contentInstance, e);
       }
-      // if we're managing the content, we get to control the queue, based on given props
+      // if we're managing the content, we get to control the stack, based on given props
       if (this.isManaged && this.props.closeOnOutsideClick) {
         switch (this.props.outsideClickType) {
-          case 'group': Queue.destroyQueue(this.props.groupName); break;
-          case 'all': Queue.destroyQueue(true); break;
-          default: Queue._destroyLast(contentInstance, this.props.groupName);
+          case 'group': Stack.destroyStack(this.props.groupName); break;
+          case 'all': Stack.destroyStack(true); break;
+          default: Stack._destroyLast(contentInstance, this.props.groupName);
         }
       }
     }
   }
 
-  /*  if something this going to trigger the content to be destroyed (like killing it in the queue), we need to
+  /*  if something this going to trigger the content to be destroyed (like killing it in the stack), we need to
       sync that here, or provide that event to the user
   */
   onContentWillDestroy = () => {
@@ -181,7 +181,7 @@ export default class Popper extends React.Component {
 // see docs for definitions of each prop here
 Popper.propTypes = {
   closeOnOutsideClick: PropTypes.bool,
-  groupName: PropTypes.string,
+  groupName: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
   initiallyOpen: PropTypes.bool,
   onOutsideClick: PropTypes.func,
   onPopperWillClose: PropTypes.func,

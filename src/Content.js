@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { createPopper } from '@popperjs/core';
 import _uniqueId from 'lodash/uniqueId';
 
-import Queue from './Queue';
+import Stack from './Stack';
 import Portal from './Portal';
 
 export default class Content extends React.Component {
@@ -12,11 +12,14 @@ export default class Content extends React.Component {
   popperEl = null;
   portalEl = null;
   popperInstance = null;
+  
+  // used in stack so we don't duplicate call destroy
+  isDestroying = false;
 
   constructor(props) {
     super(props);
 
-    // we add a unique id so the queue can easily find instances as needed
+    // we add a unique id so the stack can easily find instances as needed
     this.id = _uniqueId();
   }
 
@@ -45,8 +48,9 @@ export default class Content extends React.Component {
     this.destroyPopperInstance();
   }
 
-  /*  called if queue wants to hide this popper */
+  /*  called if stack wants to hide this popper */
   componentWillDestroy() {
+    this.isDestroying = true;
     this.props._onComponentWillDestroy();
   }
 
@@ -55,8 +59,8 @@ export default class Content extends React.Component {
     // only init if we actually have a target and popper element to bind to
     if (this.popperEl && this.props._targetRef && !this.popperInstance) {
       this.popperInstance = createPopper(this.props._targetRef, this.popperEl, this.props.popperOptions);
-      // push this instance to the queue so the queue can manage it
-      Queue._push(this, this.props._queue);
+      // push this instance to the stack so the stack can manage it
+      Stack._push(this, this.props._stack);
       document.addEventListener('click', this.onOutsideClick);
     }
   }
@@ -67,11 +71,12 @@ export default class Content extends React.Component {
       document.removeEventListener('click', this.onOutsideClick);
       this.popperInstance.destroy();
       this.popperInstance = null;
-      // remove this instance from the queue
-      Queue._removeBy(this);
+      // remove this instance from the stack
+      Stack._removeBy(this);
     }
     this.popperEl = null;
     this.portalEl = null;
+    this.isDestroying = false;
   }
 
   /*  sets the ref for the popperjs content so it can be bound. Also provide to user if they want it */
@@ -147,7 +152,7 @@ Content.propTypes = {
   _onOutsideClick: PropTypes.func,
   _portalClassName: PropTypes.string,
   _portalRoot: PropTypes.element,
-  _queue: PropTypes.string,
+  _stack: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
   _show: PropTypes.bool,
   _targetRef: PropTypes.any,
   _usePortal: PropTypes.bool,
@@ -164,7 +169,7 @@ Content.defaultProps = {
   _onOutsideClick: (instance, e) => {},
   _portalClassName: '',
   _portalRoot: null,
-  _queue: 'global',
+  _stack: 'global',
   _show: false,
   _targetRef: null,
   _usePortal: true,

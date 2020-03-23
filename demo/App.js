@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import classnames from 'classnames/bind';
 
-import PopperThing from './PopperThing';
-import DisplayBlock from './DisplayBlock';
-import { Popper, Target, Content, Queue } from '../src';
+import PopperThing from './components/PopperThing';
+import DisplayBlock from './components/DisplayBlock';
+import { Popper, Target, Content, Stack } from '../src';
 
 import ContextExample from './ContextExample';
 import MobxExample from './MobxExample';
@@ -31,22 +31,23 @@ const App = () => (
     </ul>
     <p>This library is an unstyled, functionality-only library, so all of the examples below will demonstrate functionality and available options, combined with custom styling for this demo. You can find all available options and usage via the link above.</p>
     
-    <Example1 />
-    <Example2 />
-    <Example3 />
-    <Example4 />
-    <Example5 />
-    <Example6 />
-    <Example7 />
-    <Example8 />
-    <Example9 />
-    <Example10 />
+    <ExampleBasic />
+    <ExampleRight />
+    <ExampleOutsideClick />
+    <ExampleNested />
+    <ExampleMultipleGroup />
+    <ExampleControlled />
+    <ExampleNoPortal />
+    <ExampleContext />
+    <ExampleMST />
+    <ExampleReactRouter />
+    <ExampleDestroy />
     
     <p>See the github page (link at top) for documentation and happy...popping? 😆<br /><br /></p>
   </div>
 );
 
-const Example1 = () => (
+const ExampleBasic = () => (
   <DisplayBlock
     description="This is a default popper with arrow element included and target will toggle the popper"
     example={(
@@ -71,7 +72,7 @@ const Example1 = () => (
   />
 );
 
-const Example2 = () => (
+const ExampleRight = () => (
   <DisplayBlock
     description="Another one placed to the right"
     example={(
@@ -96,7 +97,7 @@ const Example2 = () => (
   />
 );
 
-const Example3 = () => (
+const ExampleOutsideClick = () => (
   <DisplayBlock
     description="This one will close when clicking outside the popper content area"
     example={(
@@ -121,10 +122,10 @@ const Example3 = () => (
   />
 );
 
-const Example4 = () => (
+const ExampleNested = () => (
   <DisplayBlock
     description="Let's try a multi-nested popper. Watch the outside click functionality."
-    notes="You'll notice the groupName. This keeps multiple poppers in a queue. All poppers belong to a 'global' queue by default unless manually specified."
+    notes="You'll notice the groupName. This keeps multiple poppers in a stack. All poppers belong to a 'global' stack by default unless manually specified."
     example={(
       <PopperThing
         groupName="nested"
@@ -172,7 +173,56 @@ const Example4 = () => (
   />
 );
 
-const Example5 = () => {
+const ExampleMultipleGroup = () => (
+  <DisplayBlock
+    description="Here's another nested popper. However, this one applies multiple groups."
+    notes="Notice the group names. The nested poppers each have their own group, but all three belong to a parent group. This allows all three to be controlled via nested outside clicks, but inside the parent, the nested items can alternate being open. An example of this in action might be a popper containing multiple dropdowns where only one dropdown should be open at any time."
+    example={(
+      <PopperThing
+        groupName="multipleGroup"
+        closeOnOutsideClick
+      >
+        <PopperThing
+          nestedLevel={1}
+          groupName={["multipleGroup", "nested1"]}
+          closeOnOutsideClick
+        />
+
+        <PopperThing
+          nestedLevel={2}
+          groupName={["multipleGroup", "nested2"]}
+          closeOnOutsideClick
+        />
+      </PopperThing>
+    )}
+    code={(
+      `const PopperInstance = ({ children, groupName }) => (
+  <Popper
+    targetToggle
+    closeOnOutsideClick
+    groupName={groupName}
+  >
+    <Target><PopperTarget /></Target>
+    <Content
+      includeArrow
+      popperOptions={...}
+    >
+      <PopperContent>{children}</PopperContent>
+    </Content>
+  </Popper>
+);
+
+  //
+  <PopperInstance groupName="multipleGroup">
+    <PopperInstance groupName={["multipleGroup", "nested1"]} />
+    <PopperInstance groupName={["multipleGroup", "nested2"]} />
+  </PopperInstance>
+`
+    )}
+  />
+);
+
+const ExampleControlled = () => {
   const [show, setShow] = useState(false);
   const [outsideClickCount, setOutsideClickCount] = useState(0);
 
@@ -184,7 +234,7 @@ const Example5 = () => {
   return (
     <DisplayBlock
       description="You can also control your own popover if you want."
-      note="The only gotcha is controlled popovers are completely self managed, so will not be used in the regular queueing flow. This means you are left to manage hiding and showing each popper."
+      note="The only gotcha is controlled popovers are completely self managed, so will not be used in the regular stacking flow. This means you are left to manage hiding and showing each popper."
       example={(
         <div>
           <Popper
@@ -251,7 +301,7 @@ return (
   );
 };
 
-const Example6 = () => (
+const ExampleNoPortal = () => (
   <DisplayBlock
     description="Here's an example that is the same as the first example, but doesn't use a portal."
     example={(
@@ -274,7 +324,7 @@ const Example6 = () => (
   />
 );
 
-const Example7 = () => (
+const ExampleContext = () => (
   <DisplayBlock
     description="This popper uses context with a consumer inside the portal popper content."
     example={(
@@ -284,7 +334,7 @@ const Example7 = () => (
   />
 );
 
-const Example8 = () => (
+const ExampleMST = () => (
   <DisplayBlock
     description="This portal popper uses a mobx-state-tree store with mobx-react 5 provider/inject to increment a store value from the content."
     note="This was one of the use cases that prompted creating this package, as other popper libraries all threw errors in this scenario."
@@ -295,7 +345,7 @@ const Example8 = () => (
   />
 );
 
-const Example9 = () => (
+const ExampleReactRouter = () => (
   <DisplayBlock
     description="This portal popper contains a react-router-dom NavLink without throwing errors."
     note="This was one of the use cases that prompted creating this package, as other popperlibraries all threw errors in this scenario."
@@ -306,38 +356,31 @@ const Example9 = () => (
   />
 );
 
-const Example10 = () => (
+const ExampleDestroy = () => (
   <DisplayBlock
     description={(
       <div>
-        You already got a taste of queues in a previous example with the nested poppers and clicking outside. You can also manually kill a whole queue of poppers if you want.
+        You already got a taste of stacks in a previous example with the nested poppers and clicking outside. You can also manually kill a whole stack of poppers if you want.
         <br /><br />
-        Open the 3 poppers belonging to the same group below at the same time. Then, click the "close all" button to see the queue cleared out.
+        Open the 3 poppers belonging to the same group below at the same time. Then, click the "close all" button to see the stack cleared out.
       </div>
     )}
     example={(
       <>
-        <div><PopperThing groupName="example10" placement="right" /></div>
-        <div><PopperThing groupName="example10" placement="right" /></div>
-        <div><PopperThing groupName="example10" placement="right" /></div>
-        <div><button onClick={() => Queue.destroyQueue('example10')}>Close All</button></div>
+        <div><PopperThing groupName="exampleDestroy" placement="right" /></div>
+        <div><PopperThing groupName="exampleDestroy" placement="right" /></div>
+        <div><PopperThing groupName="exampleDestroy" placement="right" /></div>
+        <div><button onClick={() => Stack.destroyStack('exampleDestroy')}>Close All</button></div>
       </>
     )}
     code={(
-      `<Popper targetToggle>
-  <Target><TargetContent /></Target>
-  <Content
-    includeArrow
-    popperOptions={{
-      modifiers: [{
-        name: 'offset',
-        options: { offset: [0, 10] },
-      }],
-    }}
-  >
-    <PopperContent />
-  </Content>
-</Popper>`
+      `(Popper from example 2, with groupName="example")
+(Popper from example 2, with groupName="example")
+(Popper from example 2, with groupName="example")
+
+<button
+  onClick={() => Stack.destroyStack('example')}
+>Close All</button>`
     )}
   />
 );

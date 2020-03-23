@@ -19,7 +19,7 @@ This library is an unstyled, functionality-only library.
 
 ## Why
 
-We used react-popper for a long time and have liked it. However, we kept finding that there were situations where we couldn't do things because of the need for queued nested poppers and the inability to upgrade some of our packages. We've tried other similar libraries, but none met our needs. Once popper.js V2 came out, the decision was made to put in the effort to make our own popper library. So...here we are!
+We used react-popper for a long time and have liked it. However, we kept finding that there were situations where we couldn't do things because of the need for stackd nested poppers and the inability to upgrade some of our packages. We've tried other similar libraries, but none met our needs. Once popper.js V2 came out, the decision was made to put in the effort to make our own popper library. So...here we are!
 
 ## Installation
 
@@ -42,7 +42,7 @@ _Note 2: react and react-dom are required peer dependencies_
 
 ## Options
 
-The react-nested-popper is created firstly to handle multiple nested poppers. This is achieved by a "queue". By default, all popper instances will be on a "global" queue, but you can create your own queues as needed. 
+The react-nested-popper is created firstly to handle multiple nested poppers. This is achieved by a "stack". By default, all popper instances will be on a "global" stack, but you can create your own stacks as needed. 
 
 In addition, you can create a controlled popper (the hide/show state is managed by you), or an uncontrolled popper (the hide/show state is managed by the library).
 
@@ -75,7 +75,7 @@ With that in mind, here's the options available for the three components:
     <td>outsideClickType</td>
     <td>'default'</td>
     <td>uncontrolled</td>
-    <td>'default' will close the top most open popper in a popper queue. 'group' will close all poppers in a given queue. 'all' will close all poppers in all queue groups.</td>
+    <td>'default' will close the top most open popper in a popper stack. 'group' will close all poppers in a given stack. 'all' will close all poppers in all stack groups.</td>
   </tr>
   <tr>
     <td>targetToggle</td>
@@ -87,7 +87,7 @@ With that in mind, here's the options available for the three components:
     <td>groupName</td>
     <td>'global'</td>
     <td>both</td>
-    <td>The queue group name that this popper will belong to. For most cases, the default is enough, but if you want multiple poppers open independent of each other, this can be used.</td>
+    <td>See section below on the groupName.</td>
   </tr>
   <tr>
     <td>onOutsideClick</td>
@@ -117,7 +117,7 @@ With that in mind, here's the options available for the three components:
     <td>onPopperWillClose</td>
     <td>'()=>{}'</td>
     <td>controlled</td>
-    <td>If something is supposed to close the popper (e.g. Queue.destroyQueue was called), this method will be called so you can update your show attribute accordingly.</td>
+    <td>If something is supposed to close the popper (e.g. Stack.destroyStack was called), this method will be called so you can update your show attribute accordingly.</td>
   </tr>
   <tr>
     <td>show</td>
@@ -197,25 +197,88 @@ With that in mind, here's the options available for the three components:
 
 <br />
 
-### Queue
+### Stack
 
 ---
 
-You can also manually use the Queue util, should you need. Here's the public methods:
+You can also manually use the Stack util, should you need. Here's the public methods:
 <table>
   <tr>
     <th>Method</th>
     <th>Description</th>
   </tr>
   <tr>
-    <td>getQueue(queueName='global')</td>
-    <td>Gets the array of popper instances for a given queue name. Creates a new empty queue if queue name isn't previously defined.</td>
+    <td>getStack(stackName='global')</td>
+    <td>Gets the array of popper instances for a given stack name. Creates a new empty stack if stack name isn't previously defined.</td>
   </tr>
   <tr>
-    <td>destroyQueue(queueName=true)</td>
-    <td>Destroys all popper instances in a queue. Use `true` as the value to destroy all instances in all queues.</td>
+    <td>destroyStack(stackName=true)</td>
+    <td>Destroys all popper instances in a stack. Use `true` as the value to destroy all instances in all stacks.</td>
   </tr>
 </table>
+
+## groupName
+
+```
+<Popper
+  groupName="string"
+  (or)
+  groupName={["string", "string"]}
+>
+```
+
+The group name for popper is a bit complicated, so merits some explanation.
+
+The group name on a popper specifies which group a set of poppers belongs to. For example, if you wanted to have two poppers open at the same time, but then close in the order you opened them, you could specify each popper to belong to the same group. Alternately, you could have two poppers open at the same time and close at the same time with different groups.
+
+This is also useful for nesting, as nesting poppers and putting them in the same group will only close the top most item in the group when clicking outside. The opposite with different groups might be dropdowns where only one should be open at a given time.
+
+#### Single group
+
+In normal usage, you don't need to define a group name. All poppers will belong to a default "global" group:
+```
+<Popper
+  groupName="global"
+>
+```
+
+Depending on the need, you may need to have a set of poppers belong to a different group though. For example, maybe you want multiple popovers to open independent of each other.
+```
+<Popper
+  groupName="popper1"
+>
+<Popper
+  groupName="popper2"
+>
+```
+
+#### Multiple groups
+
+However, there is a third case we ran into. Having a nested popper, but each nested item should toggle from other items. What does this mean? Let's look at a specific example.
+
+Say I made a component that was a popper with a form inside. On this form were two dropdowns, each being their own popper component. In this situation, I might want to keep the popper open, but only allow one dropdown to be open at a time.
+
+We can't accomplish this with just one group because the dropdowns need to have separate groups to only allow one to be open. But, they both need to belong to the parent popper group. So, that's where multiple group names are needed.
+```
+<Popper
+  groupName="popper"
+>
+  <Dropdown
+    groupName={["popper", "dropdown1"]}
+  >
+  <Dropdown
+    groupName={["popper", "dropdown2"]}
+  >
+</Popper>
+```
+The array of group names is arranged from lowest to highest group, so in this case, the lowest open item would be the popper group, then the dropdown group.
+
+#### How groupName works
+
+This is the main point of this package. Basically, when a popper belongs to a group, we create a stack of poppers that belong to the given groups defined for each popper. We use this stack to track the last opened item and only close the last opened item in the group.
+
+With multiple groups, we treat the multiple groups as a mini-stack as well, where we only close the last item of the list of groups where a group contains an item. Confused yet? Anyway, this approach allows for binding multiple groups while only closing the top most item as needed each time.
+
 
 ## Misc
 

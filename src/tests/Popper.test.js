@@ -6,8 +6,8 @@ import Target from '../Target';
 import Content from '../Content';
 import Popper from '../Popper';
 
-import Queue from '../Queue';
-jest.mock('../Queue');
+import Stack from '../Stack';
+jest.mock('../Stack');
 
 describe('Popper component', () => {
   console.error = jest.fn();
@@ -187,15 +187,15 @@ describe('Popper component', () => {
 
     noClose.instance().onContentOutsideClick(contentInstance, e);
     expect(onOutsideClick).toHaveBeenCalledWith(contentInstance, e);
-    expect(Queue._destroyLast).not.toHaveBeenCalled();
+    expect(Stack._destroyLast).not.toHaveBeenCalled();
 
     closeDefault.instance().onContentOutsideClick(contentInstance, e);
-    expect(Queue._destroyLast).toHaveBeenCalledWith(contentInstance, 'global');
+    expect(Stack._destroyLast).toHaveBeenCalledWith(contentInstance, 'global');
 
     closeAll.instance().onContentOutsideClick(contentInstance, e);
-    expect(Queue.destroyQueue).toHaveBeenCalledWith(true);
+    expect(Stack.destroyStack).toHaveBeenCalledWith(true);
 
     closeGroup.instance().onContentOutsideClick(contentInstance, e);
-    expect(Queue.destroyQueue).toHaveBeenCalledWith('global');
+    expect(Stack.destroyStack).toHaveBeenCalledWith('global');
   });
 });

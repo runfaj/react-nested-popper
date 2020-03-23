@@ -3,11 +3,11 @@
 import Popper from './Popper';
 import Target from './Target';
 import Content from './Content';
-import Queue from './Queue';
+import Stack from './Stack';
 
 export {
   Popper,
   Target,
   Content,
-  Queue,
+  Stack,
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Popper, Target, Content } from '../src';
+import { Popper, Target, Content } from '../../src';
 import classnames from 'classnames/bind';
 
 import styles from './popperThing.scss';
