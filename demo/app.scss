@@ -18,7 +18,9 @@
   }
 
   body {
-    padding: 20px;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    padding: 0px;
   }
 
   button {
@@ -36,13 +38,62 @@
   h1, h2, h3, p {
     margin-bottom: 0;
   }
+
+  a {
+    color: #2f78fb;
+    text-decoration: none;
+  }
 }
 
 .app {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+}
+
+.sidebar {
+  background-color: #dddddd;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  height: 100%;
+
+  .title {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 20px 10px 10px 10px;
+  }
+
+  .navItem {
+    color: #333;
+    padding: 6px 10px;
+
+    &.active {
+      background-color: #efefef;
+    }
+  }
+}
+
+.mainContent {
   align-items: center;
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
   height: 100%;
   margin: auto;
   max-width: 900px;
+  overflow: auto;
+  padding: 0 20px 20px 20px;
+}
+
+.libLinks {
+  display: flex;
+  justify-content: space-evenly;
+  padding: 0 10px 10px 10px;
+
+  &.intro {
+    padding-top: 10px;
+    width: 200px;
+  }
 }

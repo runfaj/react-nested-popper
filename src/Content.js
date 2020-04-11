@@ -12,6 +12,7 @@ export default class Content extends React.Component {
   popperEl = null;
   portalEl = null;
   popperInstance = null;
+  determinedStack = null;
   
   // used in stack so we don't duplicate call destroy
   isDestroying = false;
@@ -60,7 +61,17 @@ export default class Content extends React.Component {
     if (this.popperEl && this.props._targetRef && !this.popperInstance) {
       this.popperInstance = createPopper(this.props._targetRef, this.popperEl, this.props.popperOptions);
       // push this instance to the stack so the stack can manage it
-      Stack._push(this, this.props._stack);
+      let stack = this.props._stack;
+      if (stack === 'auto') {
+        const myTargetParents = Stack._getTargetParents(this.props._targetRef);
+        if (!myTargetParents) {
+          stack = ['_content' + this.id];
+        } else {
+          stack = Stack._reflow(this.props._targetRef, myTargetParents);
+        }
+      }
+      this.determinedStack = stack;
+      Stack._push(this, stack);
       document.addEventListener('click', this.onOutsideClick);
     }
   }
@@ -169,7 +180,7 @@ Content.defaultProps = {
   _onOutsideClick: (instance, e) => {},
   _portalClassName: '',
   _portalRoot: null,
-  _stack: 'global',
+  _stack: 'auto',
   _show: false,
   _targetRef: null,
   _usePortal: true,

@@ -87,18 +87,32 @@ describe('Popper component', () => {
         <Content>{contentEl}</Content>
       </Popper>
     );
+
+    const onControlledClick = jest.fn();
+    const controlled = mount(
+      <Popper show onTargetClick={onControlledClick}>
+        <Target>{targetEl}</Target>
+        <Content>{contentEl}</Content>
+      </Popper>
+    );
     
     // non-toggled state becomes show and only show
     nonToggle.instance().onTargetClick();
     expect(nonToggle.instance().state.show).toBe(true);
     nonToggle.instance().onTargetClick();
     expect(nonToggle.instance().state.show).toBe(true);
+    expect(onControlledClick).toHaveBeenCalledTimes(0);
 
     // toggled instance, state should toggle
     toggle.instance().onTargetClick();
     expect(toggle.instance().state.show).toBe(true);
     toggle.instance().onTargetClick();
     expect(toggle.instance().state.show).toBe(false);
+    expect(onControlledClick).toHaveBeenCalledTimes(0);
+
+    // controlled instance, onTargetClick should fire
+    controlled.instance().onTargetClick('event');
+    expect(onControlledClick).toHaveBeenCalledWith('event');
   });
 
   it('closeContent checks', () => {

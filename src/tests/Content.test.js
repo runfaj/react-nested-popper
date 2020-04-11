@@ -65,12 +65,23 @@ describe('Content component', () => {
   });
 
   it('inits popperjs binding', () => {
+    // test with auto stack
     const component = mount(
       <Content _targetRef={props._targetRef} _show>
         <div id="inner">react-nested-popper</div>
       </Content>
     );
     expect(component.instance().popperInstance).not.toBeNull();
+    expect(component.instance().determinedStack).toEqual(['_content' + component.instance().id]);
+
+    // test with custom stack
+    const component2 = mount(
+      <Content _targetRef={props._targetRef} _show _stack="test">
+        <div id="inner">react-nested-popper</div>
+      </Content>
+    );
+    expect(component2.instance().popperInstance).not.toBeNull();
+    expect(component2.instance().determinedStack).toBe('test');
   });
 
   it('removes popperjs when not showing', () => {

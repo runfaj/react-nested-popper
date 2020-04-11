@@ -42,7 +42,7 @@ _Note 2: react and react-dom are required peer dependencies_
 
 ## Options
 
-The react-nested-popper is created firstly to handle multiple nested poppers. This is achieved by a "stack". By default, all popper instances will be on a "global" stack, but you can create your own stacks as needed. 
+The react-nested-popper is created firstly to handle multiple nested poppers. This is achieved by a "stack". By default, all popper instances will determine their own stack, but you can create your own stacks as needed. 
 
 In addition, you can create a controlled popper (the hide/show state is managed by you), or an uncontrolled popper (the hide/show state is managed by the library).
 
@@ -58,12 +58,6 @@ With that in mind, here's the options available for the three components:
     <th>Default value</th>
     <th>Controlled or Uncontrolled</th>
     <th>Description</th>
-  </tr>
-  <tr>
-    <td>closeOnOutsideClick</td>
-    <td>false</td>
-    <td>uncontrolled</td>
-    <td>If this is true, enables closing the popper by clicking outside the popper area.</td>
   </tr>
   <tr>
     <td>initiallyOpen</td>
@@ -84,8 +78,14 @@ With that in mind, here's the options available for the three components:
     <td>Set to true if you want the target to toggle the popper. By default clicking the target will only open the popper.</td>
   </tr>
   <tr>
+    <td>closeOnOutsideClick</td>
+    <td>false</td>
+    <td>both</td>
+    <td>If this is true, enables closing the popper by clicking outside the popper area.</td>
+  </tr>
+  <tr>
     <td>groupName</td>
-    <td>'global'</td>
+    <td>'auto'</td>
     <td>both</td>
     <td>See section below on the groupName.</td>
   </tr>
@@ -93,7 +93,7 @@ With that in mind, here's the options available for the three components:
     <td>onOutsideClick</td>
     <td>'(contentInstance, e)=>{}'</td>
     <td>both</td>
-    <td>Method called any time a popper is closed by clicking outside. Usually not needed unless a controlled popper.</td>
+    <td>Method called any time a popper is closed by clicking outside. Convenience method only. Use onPopperWillClose to handle controlled closing.</td>
   </tr>
   <tr>
     <td>portalClassName</td>
@@ -118,6 +118,12 @@ With that in mind, here's the options available for the three components:
     <td>'()=>{}'</td>
     <td>controlled</td>
     <td>If something is supposed to close the popper (e.g. Stack.destroyStack was called), this method will be called so you can update your show attribute accordingly.</td>
+  </tr>
+  <tr>
+    <td>onTargetClick</td>
+    <td>'(e)=>{}'</td>
+    <td>controlled</td>
+    <td>Method to call when the target is clicked on. Useful if you don't want to wrap the target content in another element (e.g. text only).</td>
   </tr>
   <tr>
     <td>show</td>
@@ -221,6 +227,8 @@ You can also manually use the Stack util, should you need. Here's the public met
 
 ```
 <Popper
+  (default case: groupName="auto")
+  (or)
   groupName="string"
   (or)
   groupName={["string", "string"]}
@@ -229,13 +237,15 @@ You can also manually use the Stack util, should you need. Here's the public met
 
 The group name for popper is a bit complicated, so merits some explanation.
 
-The group name on a popper specifies which group a set of poppers belongs to. For example, if you wanted to have two poppers open at the same time, but then close in the order you opened them, you could specify each popper to belong to the same group. Alternately, you could have two poppers open at the same time and close at the same time with different groups.
+The group name on a popper specifies which group(s) a set of poppers belongs to. For example, if you wanted to have two poppers open at the same time, but then close in the order you opened them, you could specify each popper to belong to the same group. Alternately, you could have two poppers open at the same time and close at the same time with different groups.
 
 This is also useful for nesting, as nesting poppers and putting them in the same group will only close the top most item in the group when clicking outside. The opposite with different groups might be dropdowns where only one should be open at a given time.
 
+With all of these cases, please see the demos to visually see how the group name affects nesting. **First we'll look at custom group names, then the default "auto" case.**
+
 #### Single group
 
-In normal usage, you don't need to define a group name. All poppers will belong to a default "global" group:
+You can define the groupName as any string you'd like (except "auto"). For example, here's a "global" group:
 ```
 <Popper
   groupName="global"
@@ -252,11 +262,21 @@ Depending on the need, you may need to have a set of poppers belong to a differe
 >
 ```
 
+If you define multiple poppers as the same group (regardless of physically nested or not), they will close in the opposite order they were opened.
+```
+<Popper
+  groupName="global"
+>
+<Popper
+  groupName="global"
+>
+```
+
 #### Multiple groups
 
-However, there is a third case we ran into. Having a nested popper, but each nested item should toggle from other items. What does this mean? Let's look at a specific example.
+Sometimes, a single group name for poppers isn't enough, like having a nested popper, but each nested item should toggle from other items. What does this mean? Let's look at a specific example.
 
-Say I made a component that was a popper with a form inside. On this form were two dropdowns, each being their own popper component. In this situation, I might want to keep the popper open, but only allow one dropdown to be open at a time.
+Say I made a component that was a popper with a form inside. On this form were two dropdowns, each being their own popper component. In this situation, I might want to keep the parent popper open, but only allow one child dropdown to be open at a time.
 
 We can't accomplish this with just one group because the dropdowns need to have separate groups to only allow one to be open. But, they both need to belong to the parent popper group. So, that's where multiple group names are needed.
 ```
@@ -273,7 +293,21 @@ We can't accomplish this with just one group because the dropdowns need to have 
 ```
 The array of group names is arranged from lowest to highest group, so in this case, the lowest open item would be the popper group, then the dropdown group.
 
-#### How groupName works
+#### Default "auto" case
+
+By default, groupName will be "auto". This means that the nesting will try to determine stacks by itself. With auto, the functionality behaves as follows:
+
+1. If no other popper is open, create a new stack and add this popper to it.
+2. If another popper is open, look to see if the target for this popper belongs to the open popper:
+    - If doesn't belong to another popper, add to new stack.
+    - If belongs to another popper:
+      1. find the parent popper in the stack.
+      2. Move any poppers that are children of the parent to a new stack
+      3. Add the new popper to the same stack as the parent.
+
+To interpret these rules, we basically do somemthing similar to the example mentioned in the Multiple Groups above, but automatically determine the group names so you don't have to.
+
+#### How groupName actually works
 
 This is the main point of this package. Basically, when a popper belongs to a group, we create a stack of poppers that belong to the given groups defined for each popper. We use this stack to track the last opened item and only close the last opened item in the group.
 

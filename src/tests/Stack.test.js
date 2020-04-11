@@ -8,9 +8,9 @@ describe('Stack', () => {
       delete StackStore[key];
     });
     StackUtil = new Stack('global');
-    instance1 = { id: 1, componentWillDestroy: jest.fn() };
-    instance2 = { id: 2, componentWillDestroy: jest.fn() };
-    instance3 = { id: 3, componentWillDestroy: jest.fn() };
+    instance1 = { id: 1, componentWillDestroy: jest.fn(), onOutsideClick: jest.fn() };
+    instance2 = { id: 2, componentWillDestroy: jest.fn(), onOutsideClick: jest.fn() };
+    instance3 = { id: 3, componentWillDestroy: jest.fn(), onOutsideClick: jest.fn() };
   });
 
   it('initializes with empty global stack', () => {
@@ -40,6 +40,30 @@ describe('Stack', () => {
     expect(StackStore['newTest2'][0]).toBe(instance1);
     expect(StackUtil.pushing['newTest1']).toBe(true);
     expect(StackUtil.pushing['newTest2']).toBe(true);
+  });
+
+  it('_reflow manages siblings - parentIsLast', () => {
+    StackUtil._push(instance1);
+    StackUtil._push(instance2);
+    const newStack = '_content' + instance2.id;
+    expect(StackStore[newStack]).toBeUndefined();
+    const outputs = StackUtil._reflow(null, { global: 1 });
+    expect(StackStore[newStack]).toBeUndefined();
+    expect(instance1.onOutsideClick).toHaveBeenCalledTimes(0);
+    expect(instance2.onOutsideClick).toHaveBeenCalledTimes(0);
+    expect(outputs).toEqual(['global']);
+  });
+
+  it('_reflow manages siblings - not parentIsLast', () => {
+    StackUtil._push(instance1);
+    StackUtil._push(instance2);
+    const newStack = '_content' + instance2.id;
+    expect(StackStore[newStack]).toBeUndefined();
+    const outputs = StackUtil._reflow(null, { global: 0 });
+    expect(StackStore[newStack][0]).toBe(instance2);
+    expect(instance1.onOutsideClick).toHaveBeenCalledTimes(0);
+    expect(instance2.onOutsideClick).toHaveBeenCalledTimes(1);
+    expect(outputs).toEqual(['global']);
   });
 
   it('_removeBy splices from stack', () => {

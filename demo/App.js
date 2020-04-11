@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import classnames from 'classnames/bind';
+import { BrowserRouter as Router, Switch, Route, NavLink } from 'react-router-dom';
 
 import PopperThing from './components/PopperThing';
 import DisplayBlock from './components/DisplayBlock';
@@ -15,8 +16,91 @@ const cx = classnames.bind(styles);
 
 const App = () => (
   <div className={cx('app')}>
+    <Router>
+      <Sidebar />
+      
+      <div className={cx('mainContent')}>
+        <Switch>
+          <Route path="/basic">
+            <ExampleBasic />
+            <ExampleRight />
+            <ExampleOutsideClick />
+            <ExampleNoPortal />
+          </Route>
+          <Route path="/nested">
+            <ExampleNestedAuto />
+            <ExampleNested />
+            <ExampleNestedAutoNoClose />
+            <ExampleNestedNoClose />
+          </Route>
+          <Route path="/multiple">
+            <ExampleMultipleGroupAuto />
+            <ExampleMultipleGroup />
+            <ExampleMultipleGroupAutoNested />
+            <ExampleMultipleGroupAutoNestedNoClose />
+          </Route>
+          <Route path="/controlled">
+            <ExampleControlled />
+            <ExampleControlledNested />
+          </Route>
+          <Route path="/external">
+            <ExampleContext />
+            <ExampleMST />
+            <ExampleReactRouter />
+          </Route>
+          <Route path="/misc">
+            <ExampleDestroy />
+          </Route>
+          <Route path="/">
+            <Intro />
+          </Route>
+        </Switch>
+      </div>
+    </Router>
+  </div>
+);
+
+const renderLink = (name, path) => (
+  <NavLink
+    to={path}
+    exact
+    className={cx('navItem')}
+    activeClassName={cx('active')}
+  >
+    {name}
+  </NavLink>
+);
+
+const Sidebar = () => (
+  <nav className={cx('sidebar')}>
+    <div className={cx('title')}>
+      react-nested-popper
+    </div>
+
+    <div className={cx('libLinks')}>
+      <a target="_blank" href="https://github.com/runfaj/react-nested-popper">github</a>
+      <a target="_blank" href="https://www.npmjs.com/package/react-nested-popper">npm</a>
+    </div>
+
+    {renderLink('Intro/Links', '/')}
+    {renderLink('Basic Poppers', '/basic')}
+    {renderLink('Nested Poppers', '/nested')}
+    {renderLink('Nested Popper Siblings', '/multiple')}
+    {renderLink('Controlled Poppers', '/controlled')}
+    {renderLink('External Libraries', '/external')}
+    {renderLink('Misc', '/misc')}
+  </nav>
+);
+
+/* ************* basic ************* */
+
+const Intro = () => (
+  <>
     <h1>react-nested-popper</h1>
-    <p><a href="https://github.com/runfaj/react-nested-popper">https://github.com/runfaj/react-nested-popper</a></p>
+    <div className={cx('libLinks', 'intro')}>
+      <a target="_blank" href="https://github.com/runfaj/react-nested-popper">github</a>
+      <a target="_blank" href="https://www.npmjs.com/package/react-nested-popper">npm</a>
+    </div>
     <p>
       react-nested-popper is a react library based on V2
       {' '}
@@ -29,22 +113,8 @@ const App = () => (
       <li>full implementation of popper.js allowing all popper options</li>
       <li>support for portals to decouple the popper content</li>
     </ul>
-    <p>This library is an unstyled, functionality-only library, so all of the examples below will demonstrate functionality and available options, combined with custom styling for this demo. You can find all available options and usage via the link above.</p>
-    
-    <ExampleBasic />
-    <ExampleRight />
-    <ExampleOutsideClick />
-    <ExampleNested />
-    <ExampleMultipleGroup />
-    <ExampleControlled />
-    <ExampleNoPortal />
-    <ExampleContext />
-    <ExampleMST />
-    <ExampleReactRouter />
-    <ExampleDestroy />
-    
-    <p>See the github page (link at top) for documentation and happy...popping? 😆<br /><br /></p>
-  </div>
+    <p>This library is an unstyled, functionality-only library, so all of the examples will demonstrate functionality and available options, combined with custom styling for this demo. You can find all available options and usage via the link above.</p>
+  </>
 );
 
 const ExampleBasic = () => (
@@ -74,7 +144,7 @@ const ExampleBasic = () => (
 
 const ExampleRight = () => (
   <DisplayBlock
-    description="Another one placed to the right"
+    description="Same example, but placed to the right"
     example={(
       <PopperThing
         placement="right"
@@ -122,10 +192,81 @@ const ExampleOutsideClick = () => (
   />
 );
 
-const ExampleNested = () => (
+const ExampleNoPortal = () => (
+  <DisplayBlock
+    description="Here's an example that is the same as the first example, but doesn't use a portal."
+    example={(
+      <PopperThing noPortal />
+    )}
+    code={(
+      `<Popper
+  targetToggle
+  usePortal={false}
+>
+  <Target><TargetContent /></Target>
+  <Content
+    includeArrow
+    popperOptions={...}
+  >
+    <PopperContent />
+  </Content>
+</Popper>`
+    )}
+  />
+);
+
+/* ************* nested ************* */
+
+const ExampleNestedAuto = () => (
   <DisplayBlock
     description="Let's try a multi-nested popper. Watch the outside click functionality."
-    notes="You'll notice the groupName. This keeps multiple poppers in a stack. All poppers belong to a 'global' stack by default unless manually specified."
+    example={(
+      <PopperThing
+        closeOnOutsideClick
+      >
+        <PopperThing
+          nestedLevel={1}
+          closeOnOutsideClick
+          placement="right"
+        >
+          <PopperThing
+            nestedLevel={2}
+            closeOnOutsideClick
+          />
+        </PopperThing>
+      </PopperThing>
+    )}
+    code={(
+      `const PopperInstance = ({ children }) => (
+  <Popper
+    targetToggle
+    closeOnOutsideClick
+  >
+    <Target><PopperTarget /></Target>
+    <Content
+      includeArrow
+      popperOptions={...}
+    >
+      <PopperContent>{children}</PopperContent>
+    </Content>
+  </Popper>
+);
+
+  //
+  <PopperInstance>
+    <PopperInstance>
+      <PopperInstance />
+    </PopperInstance>
+  </PopperInstance>
+`
+    )}
+  />
+);
+
+const ExampleNested = () => (
+  <DisplayBlock
+    description="Here's the same example, but with custom defined groupName props."
+    notes="The groupName is used to keeps multiple poppers in a stack. You can use this to have custom stacks open independently."
     example={(
       <PopperThing
         groupName="nested"
@@ -173,10 +314,146 @@ const ExampleNested = () => (
   />
 );
 
+const ExampleNestedAutoNoClose = () => (
+  <DisplayBlock
+    description="Here's the same as the first example (auto groupName), but without the outside click close."
+    example={(
+      <PopperThing
+      >
+        <PopperThing
+          nestedLevel={1}
+          placement="right"
+        >
+          <PopperThing
+            nestedLevel={2}
+          />
+        </PopperThing>
+      </PopperThing>
+    )}
+    code={(
+      `const PopperInstance = ({ children }) => (
+  <Popper
+    targetToggle
+  >
+    <Target><PopperTarget /></Target>
+    <Content
+      includeArrow
+      popperOptions={...}
+    >
+      <PopperContent>{children}</PopperContent>
+    </Content>
+  </Popper>
+);
+
+  //
+  <PopperInstance>
+    <PopperInstance>
+      <PopperInstance />
+    </PopperInstance>
+  </PopperInstance>
+`
+    )}
+  />
+);
+
+const ExampleNestedNoClose = () => (
+  <DisplayBlock
+    description="Here's the same as the second example (custom groupName), but without the outside click close."
+    example={(
+      <PopperThing
+        groupName="nestednoclose"
+      >
+        <PopperThing
+          nestedLevel={1}
+          groupName="nestednoclose"
+          placement="right"
+        >
+          <PopperThing
+            nestedLevel={2}
+            groupName="nestednoclose"
+          />
+        </PopperThing>
+      </PopperThing>
+    )}
+    code={(
+      `const PopperInstance = ({ children }) => (
+  <Popper
+    targetToggle
+    groupName="nestednoclose"
+  >
+    <Target><PopperTarget /></Target>
+    <Content
+      includeArrow
+      popperOptions={...}
+    >
+      <PopperContent>{children}</PopperContent>
+    </Content>
+  </Popper>
+);
+
+  //
+  <PopperInstance>
+    <PopperInstance>
+      <PopperInstance />
+    </PopperInstance>
+  </PopperInstance>
+`
+    )}
+  />
+);
+
+/* ************* multiple group ************* */
+
+const ExampleMultipleGroupAuto = () => (
+  <DisplayBlock
+    description="This nested popper applies multiple groups."
+    notes="With auto nesting, nested poppers will layer, but only one sibling in a popper can be open at the same time.  An example of this in action might be a popper containing multiple dropdowns where only one dropdown should be open at any time."
+    example={(
+      <PopperThing
+        closeOnOutsideClick
+      >
+        <PopperThing
+          nestedLevel={1}
+          closeOnOutsideClick
+        />
+
+        <PopperThing
+          nestedLevel={2}
+          closeOnOutsideClick
+        />
+      </PopperThing>
+    )}
+    code={(
+      `const PopperInstance = ({ children }) => (
+  <Popper
+    targetToggle
+    closeOnOutsideClick
+  >
+    <Target><PopperTarget /></Target>
+    <Content
+      includeArrow
+      popperOptions={...}
+    >
+      <PopperContent>{children}</PopperContent>
+    </Content>
+  </Popper>
+);
+
+  //
+  <PopperInstance>
+    <PopperInstance/>
+
+    <PopperInstance/>
+  </PopperInstance>
+`
+    )}
+  />
+);
+
 const ExampleMultipleGroup = () => (
   <DisplayBlock
-    description="Here's another nested popper. However, this one applies multiple groups."
-    notes="Notice the group names. The nested poppers each have their own group, but all three belong to a parent group. This allows all three to be controlled via nested outside clicks, but inside the parent, the nested items can alternate being open. An example of this in action might be a popper containing multiple dropdowns where only one dropdown should be open at any time."
+    description="This is the same as above, but with custom groupNames."
+    notes="Notice the group names. The nested poppers each have their own group, but all three belong to a parent group. This allows all three to be controlled via nested outside clicks, but inside the parent, the nested items can alternate being open."
     example={(
       <PopperThing
         groupName="multipleGroup"
@@ -222,6 +499,120 @@ const ExampleMultipleGroup = () => (
   />
 );
 
+const ExampleMultipleGroupAutoNested = () => (
+  <DisplayBlock
+    description="This combines multiple levels of auto nesting, but includes siblings."
+    example={(
+      <PopperThing
+        closeOnOutsideClick
+      >
+        <PopperThing
+          nestedLevel={1}
+          closeOnOutsideClick
+        >
+          <PopperThing
+            nestedLevel={3}
+            closeOnOutsideClick
+          />
+        </PopperThing>
+
+        <PopperThing
+          nestedLevel={2}
+          closeOnOutsideClick
+        >
+          <PopperThing
+            nestedLevel={4}
+            closeOnOutsideClick
+          />
+        </PopperThing>
+      </PopperThing>
+    )}
+    code={(
+      `const PopperInstance = ({ children }) => (
+  <Popper
+    targetToggle
+    closeOnOutsideClick
+  >
+    <Target><PopperTarget /></Target>
+    <Content
+      includeArrow
+      popperOptions={...}
+    >
+      <PopperContent>{children}</PopperContent>
+    </Content>
+  </Popper>
+);
+
+  //
+  <PopperInstance>
+    <PopperInstance>
+      <PopperInstance />
+    <PopperInstance>
+
+    <PopperInstance>
+      <PopperInstance />
+    <PopperInstance>
+  </PopperInstance>
+`
+    )}
+  />
+);
+
+const ExampleMultipleGroupAutoNestedNoClose = () => (
+  <DisplayBlock
+    description="For brevity, here's the same as the last example, but without the outside close."
+    example={(
+      <PopperThing
+      >
+        <PopperThing
+          nestedLevel={1}
+        >
+          <PopperThing
+            nestedLevel={3}
+          />
+        </PopperThing>
+
+        <PopperThing
+          nestedLevel={2}
+        >
+          <PopperThing
+            nestedLevel={4}
+          />
+        </PopperThing>
+      </PopperThing>
+    )}
+    code={(
+      `const PopperInstance = ({ children }) => (
+  <Popper
+    targetToggle
+  >
+    <Target><PopperTarget /></Target>
+    <Content
+      includeArrow
+      popperOptions={...}
+    >
+      <PopperContent>{children}</PopperContent>
+    </Content>
+  </Popper>
+);
+
+  //
+  <PopperInstance>
+    <PopperInstance>
+      <PopperInstance />
+    <PopperInstance>
+
+    <PopperInstance>
+      <PopperInstance />
+    <PopperInstance>
+  </PopperInstance>
+`
+    )}
+  />
+);
+
+/* ************* controlled ************* */
+
 const ExampleControlled = () => {
   const [show, setShow] = useState(false);
   const [outsideClickCount, setOutsideClickCount] = useState(0);
@@ -233,8 +624,8 @@ const ExampleControlled = () => {
   
   return (
     <DisplayBlock
-      description="You can also control your own popover if you want."
-      note="The only gotcha is controlled popovers are completely self managed, so will not be used in the regular stacking flow. This means you are left to manage hiding and showing each popper."
+      description="You can also control your own popover if you want. This is a super simple example of a single popper."
+      notes="In this example, the controlled popover is completely self managed, so will not be used in the regular stacking flow. This means you are left to manage hiding and showing each popper."
       example={(
         <div>
           <Popper
@@ -301,28 +692,97 @@ return (
   );
 };
 
-const ExampleNoPortal = () => (
-  <DisplayBlock
-    description="Here's an example that is the same as the first example, but doesn't use a portal."
-    example={(
-      <PopperThing noPortal />
-    )}
-    code={(
-      `<Popper
-  targetToggle
-  usePortal={false}
->
-  <Target><TargetContent /></Target>
-  <Content
-    includeArrow
-    popperOptions={...}
-  >
-    <PopperContent />
-  </Content>
-</Popper>`
-    )}
-  />
-);
+const ExampleControlledNested = () => {
+  const PopperInstance = ({ children, nestedLevel }) => {
+    const [show, setShow] = useState(false);
+
+    return (
+      <Popper
+        closeOnOutsideClick
+        onPopperWillClose={() => setShow(false)}
+        show={show}
+        onTargetClick={() => setShow(!show)}
+      >
+        <Target className={cx('target')}>
+          <button>Toggle</button>
+        </Target>
+        <Content
+          includeArrow
+          className={cx('content', 'nested-' + nestedLevel)}
+          portalClassName={cx('portal')}
+          arrowClassName={cx('arrow')}
+          popperOptions={{
+            placement: 'right',
+            modifiers: [
+              {
+                name: 'offset',
+                options: {
+                  offset: [0, 10],
+                },
+              },
+            ],
+          }}
+        >
+          Some popper content.
+          <br />
+          {children}
+        </Content>
+      </Popper>
+    );
+  };
+
+  return (
+    <DisplayBlock
+      description="This example shows controlled nested popovers."
+      notes="In this example, each popper is controlled, but uses the target click and onPopperWillClose to tell you when to close each popper."
+      example={(
+        <div>
+          <PopperInstance nestedLevel="0">
+            <PopperInstance nestedLevel="1">
+              <PopperInstance nestedLevel="2" />
+            </PopperInstance>
+          </PopperInstance>
+        </div>
+      )}
+      code={(
+        `const PopperInstance = ({ children }) => {
+  const [show, setShow] = useState(false);
+
+  return (
+    <Popper
+      closeOnOutsideClick
+      onPopperWillClose={() => setShow(false)}
+      show={show}
+      onTargetClick={() => setShow(!show)}
+    >
+      <Target>
+        <button>Toggle</button>
+      </Target>
+      <Content
+        includeArrow
+        popperOptions={...}
+      >
+        Some popper content.
+        <br />
+        {children}
+      </Content>
+    </Popper>
+  );
+};
+
+//
+<PopperInstance>
+  <PopperInstance>
+    <PopperInstance />
+  <PopperInstance>
+</PopperInstance>
+`
+      )}
+    />
+  );
+};
+
+/* ************* external libraries ************* */
 
 const ExampleContext = () => (
   <DisplayBlock
@@ -337,7 +797,7 @@ const ExampleContext = () => (
 const ExampleMST = () => (
   <DisplayBlock
     description="This portal popper uses a mobx-state-tree store with mobx-react 5 provider/inject to increment a store value from the content."
-    note="This was one of the use cases that prompted creating this package, as other popper libraries all threw errors in this scenario."
+    notes="This was one of the use cases that prompted creating this package, as other popper libraries all threw errors in this scenario."
     example={(
       <MobxExample />
     )}
@@ -348,13 +808,15 @@ const ExampleMST = () => (
 const ExampleReactRouter = () => (
   <DisplayBlock
     description="This portal popper contains a react-router-dom NavLink without throwing errors."
-    note="This was one of the use cases that prompted creating this package, as other popperlibraries all threw errors in this scenario."
+    notes="This was one of the use cases that prompted creating this package, as other popperlibraries all threw errors in this scenario."
     example={(
       <ReactRouterExample />
     )}
     code="See github repo for demo/ReactRouterExample.js"
   />
 );
+
+/* ************* misc ************* */
 
 const ExampleDestroy = () => (
   <DisplayBlock

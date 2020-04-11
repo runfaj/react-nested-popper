@@ -5,7 +5,9 @@ export class Stack {
   pushing = {};
 
   constructor(stack, debug = false) {
-    this.getStack(stack);
+    if (stack) {
+      this.getStack(stack);
+    }
     this.debug = debug;
   }
 
@@ -114,6 +116,54 @@ export class Stack {
     });
   }
 
+  /*  reflow is a special case for "auto" where we provide the indexes of the stack parents. This allows us to
+      to close sibling contents. Returns new list of stacks to push content onto.
+  */
+  _reflow = (targetRef, stacks) => {
+    const outputs = [];
+    Object.keys(stacks).forEach(parentStack => {
+      const foundIdx = stacks[parentStack];
+      const parentIsLast = StackStore[parentStack].length - 1 === foundIdx;
+      outputs.push(parentStack);
+
+      // move all open siblings to new stack
+      if (!parentIsLast) {
+        const siblings = StackStore[parentStack].splice(foundIdx + 1);
+        const firstSibling = siblings[0];
+        const newStack = '_content' + firstSibling.id;
+        this.getStack(newStack).push(...siblings);
+        for (let i = siblings.length - 1; i >= 0; i -= 1) {
+          const instance = siblings[i];
+          instance.determinedStack = [newStack];
+          if (instance.onOutsideClick) {
+            instance.onOutsideClick(targetRef);
+          }
+        }
+      }
+
+      /*
+        if someone comes up with the case - we may need to re-address this. Currently, if no poppers have the outside close
+        and we have:
+           p
+          / \
+          1 3
+          | |
+          2 4
+        Where the following order opens: p 1 2 3 4,
+        then our stacks become
+        p 1 2
+        3 4
+        However, we might want it like
+        p 1 3
+        1 2
+        3 4
+        First attempts of this caused weird mis-matches, so we'll need a real-life use case
+      */
+    });
+
+    return outputs;
+  }
+
   /*  this will manually splice an instance out of the stack. This is called by the component lifecycle, so this
       effectively is a cleanup method
   */
@@ -147,9 +197,66 @@ export class Stack {
       console.log('Stack:', ...msg, StackStore);
     }
   }
+
+  /*  debugging helper function to see stack store */
+  _getStackStore = () => {
+    if (this.debug) {
+      return StackStore;
+    }
+    return null;
+  }
+
+  /* given a target, returns all content parent stacks that contain target */
+  _getTargetParents = (targetRef) => {
+    /*
+        Test not written for this method, as it does some dom checking that is very hard to accurately test.
+        Essentially, we want to take an input target element and check all the stacks (which contain content
+        elements) and see if the target directly belongs to any of those content elements. If so, we track
+        the stack name and index it was found.
+
+        So, if I had this:
+          StackStore = {
+            global: [Content1, Content2, Content3],
+            blah: [Content2, Content3],
+          }
+        And my target was found nested under Content2, my returned value would be
+          {
+            global: 1,
+            blah: 0
+          }
+        
+        This output is mostly useless by itself, but directly used in the _reflow method to close contents
+        that are above the found indexes.
+    */
+
+    if (!targetRef) {
+      return null;
+    }
+
+    // generate list of stacks and the index each was found at
+    const foundList = {};
+    let foundOne = false;
+    Object.keys(StackStore).forEach(key => {
+      const items = StackStore[key];
+      for (let i = 0; i < items.length; i += 1) {
+        const content = items[i];
+        if (content.popperEl.contains(targetRef)) {
+          foundOne = true;
+          foundList[key] = i;
+          break;
+        }
+      }
+    });
+
+    if (!foundOne) {
+      return null;
+    }
+
+    return foundList;
+  }
 }
 
 // we don't export the actual stack util, since we want to always init the package with a global stack available
-const StackUtil = new Stack('global');
+const StackUtil = new Stack();
 
 export default StackUtil;

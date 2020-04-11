@@ -7,6 +7,16 @@ and this project adheres to loose [Semantic Versioning](https://semver.org/spec/
 ## [Unreleased]
 (none)
 
+## [0.4.0] - 2020-04-11
+### Added
+- Popper onTargetClick prop.
+- "auto" groupName option. This will auto-determine nested popper groups based on stack and dom placements.
+
+### Changed
+- New demo page with navigation and additional examples.
+- Popper closeOnOutsideClick now works for both managed and controlled poppers.
+- Default groupName is now "auto" instead of "global".
+
 ## [0.3.0] - 2020-03-23
 ### Added
 - Changelog file.

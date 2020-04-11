@@ -124,11 +124,13 @@ export default class Popper extends React.Component {
   }
 
   /* if managed, this will set the show state accordingly */
-  onTargetClick = () => {
+  onTargetClick = (e) => {
     if (this.isManaged) {
       this.setState(prevState => ({
         show: this.props.targetToggle ? !prevState.show : true,
       }));
+    } else if (this.props.onTargetClick) {
+      this.props.onTargetClick(e);
     }
   }
 
@@ -140,12 +142,13 @@ export default class Popper extends React.Component {
       if (this.props.onOutsideClick) {
         this.props.onOutsideClick(contentInstance, e);
       }
+      const stack = this.props.groupName === 'auto' ? contentInstance.determinedStack : this.props.groupName;
       // if we're managing the content, we get to control the stack, based on given props
-      if (this.isManaged && this.props.closeOnOutsideClick) {
+      if (this.props.closeOnOutsideClick) {
         switch (this.props.outsideClickType) {
-          case 'group': Stack.destroyStack(this.props.groupName); break;
+          case 'group': Stack.destroyStack(stack); break;
           case 'all': Stack.destroyStack(true); break;
-          default: Stack._destroyLast(contentInstance, this.props.groupName);
+          default: Stack._destroyLast(contentInstance, stack);
         }
       }
     }
@@ -185,6 +188,7 @@ Popper.propTypes = {
   initiallyOpen: PropTypes.bool,
   onOutsideClick: PropTypes.func,
   onPopperWillClose: PropTypes.func,
+  onTargetClick: PropTypes.func,
   outsideClickType: PropTypes.oneOf(['default', 'group', 'all']),
   portalClassName: PropTypes.string,
   portalRoot: PropTypes.element,
@@ -194,10 +198,11 @@ Popper.propTypes = {
 };
 Popper.defaultProps = {
   closeOnOutsideClick: false,
-  groupName: 'global',
+  groupName: 'auto',
   initiallyOpen: false,
   onOutsideClick: (e) => {},
   onPopperWillClose: () => {},
+  onTargetClick: (e) => {},
   outsideClickType: 'default',
   portalClassName: '',
   portalRoot: null,

@@ -1,13 +1,13 @@
 {
   "name": "react-nested-popper",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A react library based on popper.js that supports nested poppers and proper context binding.",
   "main": "dist/lib.js",
   "scripts": {
     "build": "webpack --mode=production",
     "start": "webpack-dev-server --mode=development",
     "deploy": "gh-pages -d dist",
-    "post-deploy": "rm dist/demo.js dist/index.html",
+    "post-deploy": "rm dist/demo.css dist/demo.js dist/index.html",
     "publish-demo": "npm run build && npm run deploy && npm run post-deploy",
     "prepublish": "npm run build",
     "postpublish": "npm run publish-demo",
