@@ -16,7 +16,7 @@ const cx = classnames.bind(styles);
 
 const App = () => (
   <div className={cx('app')}>
-    <Router>
+    <Router basename="/react-nested-popper">
       <Sidebar />
       
       <div className={cx('mainContent')}>
