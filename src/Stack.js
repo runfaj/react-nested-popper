@@ -258,5 +258,7 @@ export class Stack {
 
 // we don't export the actual stack util, since we want to always init the package with a global stack available
 const StackUtil = new Stack();
+// for debug
+// const StackUtil = new Stack(null, true);
 
 export default StackUtil;
