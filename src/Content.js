@@ -15,6 +15,9 @@ export default class Content extends React.Component {
   popperInstance = null;
   determinedStack = null;
   resizerEventAdded = false;
+  positionPoller = null;
+  lastTargetPos = [0, 0];
+  targetParents = null;
   
   // used in stack so we don't duplicate call destroy
   isDestroying = false;
@@ -32,9 +35,12 @@ export default class Content extends React.Component {
       this.initPopperInstance();
       this.initResizer();
     }
+    if (this.props._targetRef) {
+      this.targetParents = Stack._getTargetParents(this.props._targetRef);
+    }
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
     // watch prop changes to see if we need to init or update the popperjs instance
     // if not show, we kill the instance and clean up refs
     if (this.props._show) {
@@ -45,14 +51,16 @@ export default class Content extends React.Component {
         this.popperInstance.setOptions(this.popperOptions);
       }
     } else {
+      this.destroyResizer();
       this.destroyPopperInstance();
+    }
+    if (prevProps._targetRef !== this.props._targetRef) {
+      this.targetParents = Stack._getTargetParents(this.props._targetRef);
     }
   }
 
   componentWillUnmount() {
-    if (this.resizerEl && this.resizerEl.contentDocument && this.resizerEventAdded) {
-      this.resizerEl.contentDocument.defaultView.removeEventListener('resize', this.onResize);
-    }
+    this.destroyResizer();
     this.destroyPopperInstance();
   }
 
@@ -97,7 +105,6 @@ export default class Content extends React.Component {
     this.isDestroying = false;
   }
 
-  /*  init resizer */
   initResizer() {
     if (this.resizerEl && !this.resizerEventAdded) {
       if (!this.resizerEl.contentDocument) {
@@ -107,10 +114,25 @@ export default class Content extends React.Component {
         if (this.resizerEventAdded === null) {
           this.resizerEl.removeEventListener('load', this.initResizer);
         }
+        if (this.props._targetRef) {
+          this.lastTargetPos = this.props._targetRef.getBoundingClientRect();
+        }
+        this.positionPoller = setInterval(this.onCheckPosition, 50);
         this.resizerEl.contentDocument.defaultView.addEventListener('resize', this.onResize);
         this.resizerEventAdded = true;
       }
     }
+  }
+
+  destroyResizer() {
+    if (this.resizerEl && this.resizerEl.contentDocument && this.resizerEventAdded) {
+      this.resizerEl.contentDocument.defaultView.removeEventListener('resize', this.onResize);
+    }
+    if (this.positionPoller) {
+      clearInterval(this.positionPoller);
+      this.positionPoller = null;
+    }
+    this.resizerEventAdded = false;
   }
 
   /*  sets the ref for the popperjs content so it can be bound. Also provide to user if they want it */
@@ -128,6 +150,25 @@ export default class Content extends React.Component {
 
   setResizerRef = (el) => {
     this.resizerEl = el;
+  }
+
+  onCheckPosition = () => {
+    if (this.props._targetRef) {
+      let { left: lastLeft, top: lastTop } = this.lastTargetPos;
+      const thisTargetPos = this.props._targetRef.getBoundingClientRect();
+      const { left, top } = thisTargetPos;
+
+      if (lastLeft === 0 && lastTop === 0) {
+        lastLeft = left;
+        lastTop = top;
+      }
+      if (lastLeft !== left || lastTop !== top) {
+        if (this.targetParents) { // only update for nested poppers
+          this.popperInstance.update();
+        }
+      }
+      this.lastTargetPos = thisTargetPos;
+    }
   }
 
   /*  any click outside the portal or popper should trigger an outside click */
