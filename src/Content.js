@@ -11,8 +11,10 @@ export default class Content extends React.Component {
 
   popperEl = null;
   portalEl = null;
+  resizerEl = null;
   popperInstance = null;
   determinedStack = null;
+  resizerEventAdded = false;
   
   // used in stack so we don't duplicate call destroy
   isDestroying = false;
@@ -28,6 +30,7 @@ export default class Content extends React.Component {
     // if show was initially enabled, init popperjs immediately
     if (this.props._show) {
       this.initPopperInstance();
+      this.initResizer();
     }
   }
 
@@ -37,6 +40,7 @@ export default class Content extends React.Component {
     if (this.props._show) {
       if (!this.popperInstance) {
         this.initPopperInstance();
+        this.initResizer();
       } else {
         this.popperInstance.setOptions(this.popperOptions);
       }
@@ -46,6 +50,9 @@ export default class Content extends React.Component {
   }
 
   componentWillUnmount() {
+    if (this.resizerEl && this.resizerEl.contentDocument && this.resizerEventAdded) {
+      this.resizerEl.contentDocument.defaultView.removeEventListener('resize', this.onResize);
+    }
     this.destroyPopperInstance();
   }
 
@@ -90,6 +97,22 @@ export default class Content extends React.Component {
     this.isDestroying = false;
   }
 
+  /*  init resizer */
+  initResizer() {
+    if (this.resizerEl && !this.resizerEventAdded) {
+      if (!this.resizerEl.contentDocument) {
+        this.resizerEl.addEventListener('load', this.initResizer);
+        this.resizerEventAdded = null;
+      } else {
+        if (this.resizerEventAdded === null) {
+          this.resizerEl.removeEventListener('load', this.initResizer);
+        }
+        this.resizerEl.contentDocument.defaultView.addEventListener('resize', this.onResize);
+        this.resizerEventAdded = true;
+      }
+    }
+  }
+
   /*  sets the ref for the popperjs content so it can be bound. Also provide to user if they want it */
   setPopperRef = (el) => {
     this.popperEl = el;
@@ -103,6 +126,10 @@ export default class Content extends React.Component {
     this.portalEl = el;
   }
 
+  setResizerRef = (el) => {
+    this.resizerEl = el;
+  }
+
   /*  any click outside the portal or popper should trigger an outside click */
   onOutsideClick = (e) => {
     if (this.portalEl) {
@@ -112,6 +139,11 @@ export default class Content extends React.Component {
     } else if (!this.popperEl || !this.popperEl.contains(e.target)) {
       this.props._onOutsideClick(this, e);
     }
+  }
+
+  /*  update popper position on content resize */
+  onResize = () => {
+    this.popperInstance.update();
   }
 
   render() {
@@ -124,7 +156,9 @@ export default class Content extends React.Component {
         className={this.props.className}
         ref={this.setPopperRef}
         onClick={this.props.onClick}
+        style={{ position: 'relative' }}
       >
+        {this.renderResizerIframe()}
         {this.props.children}
         {this.props.includeArrow && (
           <div className={this.props.arrowClassName} data-popper-arrow />
@@ -145,6 +179,31 @@ export default class Content extends React.Component {
     }
 
     return popper;
+  }
+
+  renderResizerIframe() {
+    return (
+      <iframe
+        src="about:blank"
+        ref={this.setResizerRef}
+        aria-hidden
+        tabIndex={-1}
+        frameBorder={0}
+        title="resizer"
+        style={{
+          display: 'block',
+          opacity: 0,
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          height: '100%',
+          width: '100%',
+          overflow: 'hidden',
+          pointerEvents: 'none',
+          zIndex: -1,
+        }}
+      />
+    );
   }
 }
 
