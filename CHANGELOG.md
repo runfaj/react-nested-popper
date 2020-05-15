@@ -4,8 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to loose [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-(none)
+## [0.5.0] - 2020-05-15
+### Fixed
+- [#2](https://github.com/runfaj/react-nested-popper/issues/2) - Added position listener to update popper position for nested poppers
+- [#4](https://github.com/runfaj/react-nested-popper/issues/4) - Content resizing now updates popper position
+- [#5](https://github.com/runfaj/react-nested-popper/issues/5) - Fixed routing on demo
 
 ## [0.4.0] - 2020-04-11
 ### Added

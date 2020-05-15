@@ -64,7 +64,7 @@ describe('Content component', () => {
     expect(componentNoPortal.find('.portal').exists()).toBe(false);
   });
 
-  it('inits popperjs binding', () => {
+  it('inits popperjs binding and resize/position handling', () => {
     // test with auto stack
     const component = mount(
       <Content _targetRef={props._targetRef} _show>
@@ -72,6 +72,9 @@ describe('Content component', () => {
       </Content>
     );
     expect(component.instance().popperInstance).not.toBeNull();
+    expect(component.instance().resizerEl).not.toBeNull();
+    expect(component.instance().resizerEventAdded).toBe(true);
+    expect(component.instance().positionPoller).not.toBeNull();
     expect(component.instance().determinedStack).toEqual(['_content' + component.instance().id]);
 
     // test with custom stack
@@ -84,15 +87,19 @@ describe('Content component', () => {
     expect(component2.instance().determinedStack).toBe('test');
   });
 
-  it('removes popperjs when not showing', () => {
+  it('removes popperjs and resizers when not showing', () => {
     const component = mount(
       <Content _targetRef={props._targetRef} _show>
         <div id="inner">react-nested-popper</div>
       </Content>
     );
     expect(component.instance().popperInstance).not.toBeNull();
+    expect(component.instance().positionPoller).not.toBeNull();
+    expect(component.instance().resizerEventAdded).toBe(true);
     component.setProps({ _show: false });
     expect(component.instance().popperInstance).toBeNull();
+    expect(component.instance().positionPoller).toBeNull();
+    expect(component.instance().resizerEventAdded).toBe(false);
   });
 
   it('calls outside click appropriately', () => {
@@ -111,5 +118,16 @@ describe('Content component', () => {
       target: props._targetRef,
     });
     expect(props._onOutsideClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls resize properly', () => {
+    const component = mount(
+      <Content _targetRef={props._targetRef} _show>
+        <div id="inner">react-nested-popper</div>
+      </Content>
+    );
+    component.instance().popperInstance.update = jest.fn();
+    component.setProps({ children: 'blah' });
+    expect(component.instance().popperInstance.update).toHaveBeenCalledTimes(1);
   });
 });
