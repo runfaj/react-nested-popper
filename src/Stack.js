@@ -240,7 +240,7 @@ export class Stack {
       const items = StackStore[key];
       for (let i = 0; i < items.length; i += 1) {
         const content = items[i];
-        if (content.popperEl.contains(targetRef)) {
+        if (content.popperEl && content.popperEl.contains(targetRef)) {
           foundOne = true;
           foundList[key] = i;
           break;
