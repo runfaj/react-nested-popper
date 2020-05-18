@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { createPopper } from '@popperjs/core';
 import _uniqueId from 'lodash/uniqueId';
+import _isEqual from 'lodash/isEqual';
 
 import Stack from './Stack';
 import Portal from './Portal';
@@ -46,8 +47,9 @@ export default class Content extends React.Component {
       if (!this.popperInstance) {
         this.initPopperInstance();
         this.initResizer();
-      } else {
-        this.popperInstance.setOptions(this.popperOptions);
+      } else if (!_isEqual(this.props.popperOptions, prevProps.popperOptions)) {
+        this.popperInstance.setOptions(this.props.popperOptions);
+        this.forcePopperUpdate();
       }
     } else {
       this.destroyResizer();
@@ -89,12 +91,7 @@ export default class Content extends React.Component {
       // use capture so child re-renders happen after. Otherwise the original clicked target can disappear, causing false outside clicks
       document.addEventListener('click', this.onOutsideClick, true);
 
-      setTimeout(() => {
-        // after init, tell popper to relcalculate based on options in case it didn't do it properly the first time
-        if (this.popperInstance) {
-          this.popperInstance.update();
-        }
-      });
+      this.forcePopperUpdate();
     }
   }
 
@@ -109,6 +106,15 @@ export default class Content extends React.Component {
     }
     this.popperEl = null;
     this.isDestroying = false;
+  }
+
+  forcePopperUpdate() {
+    setTimeout(() => {
+      // tell popper to relcalculate based on options in case it didn't do it properly the first time
+      if (this.popperInstance) {
+        this.popperInstance.update();
+      }
+    });
   }
 
   initResizer() {
