@@ -91,7 +91,9 @@ export default class Content extends React.Component {
 
       setTimeout(() => {
         // after init, tell popper to relcalculate based on options in case it didn't do it properly the first time
-        this.popperInstance.update();
+        if (this.popperInstance) {
+          this.popperInstance.update();
+        }
       });
     }
   }
@@ -168,7 +170,7 @@ export default class Content extends React.Component {
         lastTop = top;
       }
       if (lastLeft !== left || lastTop !== top) {
-        if (this.targetParents) { // only update for nested poppers
+        if (this.targetParents && this.popperInstance) { // only update for nested poppers
           this.popperInstance.update();
         }
       }
@@ -189,7 +191,9 @@ export default class Content extends React.Component {
 
   /*  update popper position on content resize */
   onResize = () => {
-    this.popperInstance.update();
+    if (this.popperInstance) {
+      this.popperInstance.update();
+    }
   }
 
   render() {
