@@ -88,6 +88,11 @@ export default class Content extends React.Component {
       this.determinedStack = stack;
       Stack._push(this, stack);
       document.addEventListener('click', this.onOutsideClick);
+
+      setTimeout(() => {
+        // after init, tell popper to relcalculate based on options in case it didn't do it properly the first time
+        this.popperInstance.update();
+      });
     }
   }
 
