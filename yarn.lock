@@ -1231,10 +1231,10 @@
     "@types/yargs" "^15.0.0"
     chalk "^3.0.0"
 
-"@popperjs/core@^2.0.3":
-  version "2.0.3"
-  resolved "https://registry.npmjs.org/@popperjs/core/-/core-2.0.3.tgz#e18b505eb2ac5aeb4df4b41d69b324149f1bb9fd"
-  integrity sha512-LruFy9VJw+RdsvWXUCmqmCFBb5Q0YrbJ8qMDnjoXxTuOSwsmDgXw3sIgEIy0eRnKpdHMV8UOPnRRJNDRcidlCA==
+"@popperjs/core@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.npmjs.org/@popperjs/core/-/core-2.4.0.tgz#0e1bdf8d021e7ea58affade33d9d607e11365915"
+  integrity sha512-NMrDy6EWh9TPdSRiHmHH2ye1v5U0gBD7pRYwSwJvomx7Bm4GG04vu63dYiVzebLOx2obPpJugew06xVP0Nk7hA==
 
 "@sinonjs/commons@^1.7.0":
   version "1.7.0"

@@ -1,6 +1,6 @@
 {
   "name": "react-nested-popper",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "description": "A react library based on popper.js that supports nested poppers and proper context binding.",
   "main": "dist/lib.js",
   "scripts": {
@@ -41,7 +41,7 @@
     "react-dom": "^16.x"
   },
   "dependencies": {
-    "@popperjs/core": "^2.0.3",
+    "@popperjs/core": "^2.4.0",
     "classnames": "^2.2.6",
     "lodash": "^4.17.15",
     "mobx": "^5.15.4",

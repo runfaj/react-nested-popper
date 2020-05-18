@@ -120,7 +120,7 @@ describe('Content component', () => {
     expect(props._onOutsideClick).toHaveBeenCalledTimes(1);
   });
 
-  it('calls resize properly', () => {
+  it('calls resize properly', async () => {
     const component = mount(
       <Content _targetRef={props._targetRef} _show>
         <div id="inner">react-nested-popper</div>
@@ -128,6 +128,7 @@ describe('Content component', () => {
     );
     component.instance().popperInstance.update = jest.fn();
     component.setProps({ children: 'blah' });
+    await new Promise((r) => setTimeout(r, 200)); // wait for setInterval check in code
     expect(component.instance().popperInstance.update).toHaveBeenCalledTimes(1);
   });
 });

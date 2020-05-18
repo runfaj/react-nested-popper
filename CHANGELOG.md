@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to loose [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.5] - 2020-05-18
+### Changed
+- Upgraded to popperjs 2.4.0
+- Limited popper options update cycle to be smarter
+
 ## [0.5.4] - 2020-05-18
 ### Fixed
 - An issue where state change on nested target could cause outside click to misfire.
