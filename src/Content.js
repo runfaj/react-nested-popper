@@ -10,7 +10,6 @@ export default class Content extends React.Component {
   static className = 'react-nested-popper_Content';
 
   popperEl = null;
-  portalEl = null;
   resizerEl = null;
   popperInstance = null;
   determinedStack = null;
@@ -87,7 +86,8 @@ export default class Content extends React.Component {
       }
       this.determinedStack = stack;
       Stack._push(this, stack);
-      document.addEventListener('click', this.onOutsideClick);
+      // use capture so child re-renders happen after. Otherwise the original clicked target can disappear, causing false outside clicks
+      document.addEventListener('click', this.onOutsideClick, true);
 
       setTimeout(() => {
         // after init, tell popper to relcalculate based on options in case it didn't do it properly the first time
@@ -101,14 +101,13 @@ export default class Content extends React.Component {
   /*  destroy popperjs */
   destroyPopperInstance() {
     if (this.popperInstance) {
-      document.removeEventListener('click', this.onOutsideClick);
+      document.removeEventListener('click', this.onOutsideClick, true);
       this.popperInstance.destroy();
       this.popperInstance = null;
       // remove this instance from the stack
       Stack._removeBy(this);
     }
     this.popperEl = null;
-    this.portalEl = null;
     this.isDestroying = false;
   }
 
@@ -150,11 +149,6 @@ export default class Content extends React.Component {
     }
   }
 
-  /*  track the portal ref, used for outside click checking */
-  setPortalRef = (el) => {
-    this.portalEl = el;
-  }
-
   setResizerRef = (el) => {
     this.resizerEl = el;
   }
@@ -180,11 +174,7 @@ export default class Content extends React.Component {
 
   /*  any click outside the portal or popper should trigger an outside click */
   onOutsideClick = (e) => {
-    if (this.portalEl) {
-      if (!this.portalEl.contains(e.target)) {
-        this.props._onOutsideClick(this, e);
-      }
-    } else if (!this.popperEl || !this.popperEl.contains(e.target)) {
+    if (!this.popperEl || !this.popperEl.contains(e.target)) {
       this.props._onOutsideClick(this, e);
     }
   }
@@ -221,7 +211,6 @@ export default class Content extends React.Component {
         <Portal
           portalRoot={this.props._portalRoot}
           className={this.props._portalClassName}
-          innerRef={this.setPortalRef}
         >
           {popper}
         </Portal>

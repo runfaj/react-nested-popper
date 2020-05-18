@@ -4,10 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to loose [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.4] - 2020-05-18
+### Fixed
+- An issue where state change on nested target could cause outside click to misfire.
+
 ## [0.5.3] - 2020-05-18
 ### Fixed
-- An issue with nested poppers not displaying the correct placement.
 - Wrapped popper instance with checks so external tests don't have potential issues
+
+## [0.5.2] - 2020-05-18
+### Fixed
+- An issue with nested poppers not displaying the correct placement.
 
 ## [0.5.1] - 2020-05-15
 ### Fixed
