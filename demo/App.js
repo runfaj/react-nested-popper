@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import classnames from 'classnames/bind';
-import { BrowserRouter as Router, Switch, Route, NavLink } from 'react-router-dom';
+import { HashRouter as Router, Switch, Route, NavLink } from 'react-router-dom';
 
 import PopperThing from './components/PopperThing';
 import DisplayBlock from './components/DisplayBlock';
@@ -14,51 +14,53 @@ import styles from './app.scss';
 
 const cx = classnames.bind(styles);
 
-const App = () => (
-  <div className={cx('app')}>
-    <Router basename="/react-nested-popper">
-      <Sidebar />
-      
-      <div className={cx('mainContent')}>
-        <Switch>
-          <Route path="/basic">
-            <ExampleBasic />
-            <ExampleRight />
-            <ExampleOutsideClick />
-            <ExampleNoPortal />
-          </Route>
-          <Route path="/nested">
-            <ExampleNestedAuto />
-            <ExampleNested />
-            <ExampleNestedAutoNoClose />
-            <ExampleNestedNoClose />
-          </Route>
-          <Route path="/multiple">
-            <ExampleMultipleGroupAuto />
-            <ExampleMultipleGroup />
-            <ExampleMultipleGroupAutoNested />
-            <ExampleMultipleGroupAutoNestedNoClose />
-          </Route>
-          <Route path="/controlled">
-            <ExampleControlled />
-            <ExampleControlledNested />
-          </Route>
-          <Route path="/external">
-            <ExampleContext />
-            <ExampleMST />
-            <ExampleReactRouter />
-          </Route>
-          <Route path="/misc">
-            <ExampleDestroy />
-          </Route>
-          <Route path="/">
-            <Intro />
-          </Route>
-        </Switch>
-      </div>
-    </Router>
-  </div>
-);
+const App = () => {
+  return (
+    <div className={cx('app')}>
+      <Router basename="/">
+        <Sidebar />
+        
+        <div className={cx('mainContent')}>
+          <Switch>
+            <Route path="/basic">
+              <ExampleBasic />
+              <ExampleRight />
+              <ExampleOutsideClick />
+              <ExampleNoPortal />
+            </Route>
+            <Route path="/nested">
+              <ExampleNestedAuto />
+              <ExampleNested />
+              <ExampleNestedAutoNoClose />
+              <ExampleNestedNoClose />
+            </Route>
+            <Route path="/multiple">
+              <ExampleMultipleGroupAuto />
+              <ExampleMultipleGroup />
+              <ExampleMultipleGroupAutoNested />
+              <ExampleMultipleGroupAutoNestedNoClose />
+            </Route>
+            <Route path="/controlled">
+              <ExampleControlled />
+              <ExampleControlledNested />
+            </Route>
+            <Route path="/external">
+              <ExampleContext />
+              <ExampleMST />
+              <ExampleReactRouter />
+            </Route>
+            <Route path="/misc">
+              <ExampleDestroy />
+            </Route>
+            <Route path="/">
+              <Intro />
+            </Route>
+          </Switch>
+        </div>
+      </Router>
+    </div>
+  );
+};
 
 const renderLink = (name, path) => (
   <NavLink
