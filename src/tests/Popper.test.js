@@ -168,7 +168,7 @@ describe('Popper component', () => {
     const closeDefault = mount(
       <Popper
         onOutsideClick={onOutsideClick}
-        closeOnOutsideClick
+        shouldCloseOnOutsideClick={() => true}
         outsideClickType="default"
         groupName="global"
       >
@@ -179,7 +179,7 @@ describe('Popper component', () => {
     const closeAll = mount(
       <Popper
         onOutsideClick={onOutsideClick}
-        closeOnOutsideClick
+        shouldCloseOnOutsideClick={() => true}
         outsideClickType="all"
         groupName="global"
       >
@@ -190,7 +190,7 @@ describe('Popper component', () => {
     const closeGroup = mount(
       <Popper
         onOutsideClick={onOutsideClick}
-        closeOnOutsideClick
+        shouldCloseOnOutsideClick={() => true}
         outsideClickType="group"
         groupName="global"
       >

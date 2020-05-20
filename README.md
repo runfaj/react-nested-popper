@@ -78,10 +78,10 @@ With that in mind, here's the options available for the three components:
     <td>Set to true if you want the target to toggle the popper. By default clicking the target will only open the popper.</td>
   </tr>
   <tr>
-    <td>closeOnOutsideClick</td>
-    <td>false</td>
+    <td>shouldCloseOnOutsideClick</td>
+    <td>(e) => false</td>
     <td>both</td>
-    <td>If this is true, enables closing the popper by clicking outside the popper area.</td>
+    <td>If this returns true, enables closing the popper by clicking outside the popper area.</td>
   </tr>
   <tr>
     <td>groupName</td>
@@ -93,7 +93,7 @@ With that in mind, here's the options available for the three components:
     <td>onOutsideClick</td>
     <td>'(contentInstance, e)=>{}'</td>
     <td>both</td>
-    <td>Method called any time a popper is closed by clicking outside. Convenience method only. Use onPopperWillClose to handle controlled closing.</td>
+    <td>Method called any time a click occurs outside the popper content (target excluded). Convenience method only. Use onPopperWillClose to handle controlled closing.</td>
   </tr>
   <tr>
     <td>portalClassName</td>
