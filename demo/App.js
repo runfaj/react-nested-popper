@@ -172,13 +172,13 @@ const ExampleOutsideClick = () => (
     description="This one will close when clicking outside the popper content area"
     example={(
       <PopperThing
-        closeOnOutsideClick
+        shouldCloseOnOutsideClick={() => true}
       />
     )}
     code={(
       `<Popper
   targetToggle
-  closeOnOutsideClick
+  shouldCloseOnOutsideClick={() => true}
 >
   <Target><PopperTarget /></Target>
   <Content
@@ -222,16 +222,16 @@ const ExampleNestedAuto = () => (
     description="Let's try a multi-nested popper. Watch the outside click functionality."
     example={(
       <PopperThing
-        closeOnOutsideClick
+        shouldCloseOnOutsideClick={() => true}
       >
         <PopperThing
           nestedLevel={1}
-          closeOnOutsideClick
+          shouldCloseOnOutsideClick={() => true}
           placement="right"
         >
           <PopperThing
             nestedLevel={2}
-            closeOnOutsideClick
+            shouldCloseOnOutsideClick={() => true}
           />
         </PopperThing>
       </PopperThing>
@@ -240,7 +240,7 @@ const ExampleNestedAuto = () => (
       `const PopperInstance = ({ children }) => (
   <Popper
     targetToggle
-    closeOnOutsideClick
+    shouldCloseOnOutsideClick={() => true}
   >
     <Target><PopperTarget /></Target>
     <Content
@@ -270,18 +270,18 @@ const ExampleNested = () => (
     example={(
       <PopperThing
         groupName="nested"
-        closeOnOutsideClick
+        shouldCloseOnOutsideClick={() => true}
       >
         <PopperThing
           nestedLevel={1}
           groupName="nested"
-          closeOnOutsideClick
+          shouldCloseOnOutsideClick={() => true}
           placement="right"
         >
           <PopperThing
             nestedLevel={2}
             groupName="nested"
-            closeOnOutsideClick
+            shouldCloseOnOutsideClick={() => true}
           />
         </PopperThing>
       </PopperThing>
@@ -290,7 +290,7 @@ const ExampleNested = () => (
       `const PopperInstance = ({ children }) => (
   <Popper
     targetToggle
-    closeOnOutsideClick
+    shouldCloseOnOutsideClick={() => true}
     groupName="nested"
   >
     <Target><PopperTarget /></Target>
@@ -410,16 +410,16 @@ const ExampleMultipleGroupAuto = () => (
     notes="With auto nesting, nested poppers will layer, but only one sibling in a popper can be open at the same time.  An example of this in action might be a popper containing multiple dropdowns where only one dropdown should be open at any time."
     example={(
       <PopperThing
-        closeOnOutsideClick
+        shouldCloseOnOutsideClick={() => true}
       >
         <PopperThing
           nestedLevel={1}
-          closeOnOutsideClick
+          shouldCloseOnOutsideClick={() => true}
         />
 
         <PopperThing
           nestedLevel={2}
-          closeOnOutsideClick
+          shouldCloseOnOutsideClick={() => true}
         />
       </PopperThing>
     )}
@@ -427,7 +427,7 @@ const ExampleMultipleGroupAuto = () => (
       `const PopperInstance = ({ children }) => (
   <Popper
     targetToggle
-    closeOnOutsideClick
+    shouldCloseOnOutsideClick={() => true}
   >
     <Target><PopperTarget /></Target>
     <Content
@@ -457,18 +457,18 @@ const ExampleMultipleGroup = () => (
     example={(
       <PopperThing
         groupName="multipleGroup"
-        closeOnOutsideClick
+        shouldCloseOnOutsideClick={() => true}
       >
         <PopperThing
           nestedLevel={1}
           groupName={["multipleGroup", "nested1"]}
-          closeOnOutsideClick
+          shouldCloseOnOutsideClick={() => true}
         />
 
         <PopperThing
           nestedLevel={2}
           groupName={["multipleGroup", "nested2"]}
-          closeOnOutsideClick
+          shouldCloseOnOutsideClick={() => true}
         />
       </PopperThing>
     )}
@@ -476,7 +476,7 @@ const ExampleMultipleGroup = () => (
       `const PopperInstance = ({ children, groupName }) => (
   <Popper
     targetToggle
-    closeOnOutsideClick
+    shouldCloseOnOutsideClick={() => true}
     groupName={groupName}
   >
     <Target><PopperTarget /></Target>
@@ -504,25 +504,25 @@ const ExampleMultipleGroupAutoNested = () => (
     description="This combines multiple levels of auto nesting, but includes siblings."
     example={(
       <PopperThing
-        closeOnOutsideClick
+        shouldCloseOnOutsideClick={() => true}
       >
         <PopperThing
           nestedLevel={1}
-          closeOnOutsideClick
+          shouldCloseOnOutsideClick={() => true}
         >
           <PopperThing
             nestedLevel={3}
-            closeOnOutsideClick
+            shouldCloseOnOutsideClick={() => true}
           />
         </PopperThing>
 
         <PopperThing
           nestedLevel={2}
-          closeOnOutsideClick
+          shouldCloseOnOutsideClick={() => true}
         >
           <PopperThing
             nestedLevel={4}
-            closeOnOutsideClick
+            shouldCloseOnOutsideClick={() => true}
           />
         </PopperThing>
       </PopperThing>
@@ -531,7 +531,7 @@ const ExampleMultipleGroupAutoNested = () => (
       `const PopperInstance = ({ children }) => (
   <Popper
     targetToggle
-    closeOnOutsideClick
+    shouldCloseOnOutsideClick={() => true}
   >
     <Target><PopperTarget /></Target>
     <Content
@@ -698,7 +698,7 @@ const ExampleControlledNested = () => {
 
     return (
       <Popper
-        closeOnOutsideClick
+        shouldCloseOnOutsideClick={() => true}
         onPopperWillClose={() => setShow(false)}
         show={show}
         onTargetClick={() => setShow(!show)}
@@ -750,7 +750,7 @@ const ExampleControlledNested = () => {
 
   return (
     <Popper
-      closeOnOutsideClick
+      shouldCloseOnOutsideClick={() => true}
       onPopperWillClose={() => setShow(false)}
       show={show}
       onTargetClick={() => setShow(!show)}

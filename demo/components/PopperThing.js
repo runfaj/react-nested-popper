@@ -8,7 +8,7 @@ const cx = classnames.bind(styles);
 
 const PopperThing = ({
   placement = 'bottom',
-  closeOnOutsideClick = false,
+  shouldCloseOnOutsideClick = () => false,
   children,
   nestedLevel = 0,
   groupName,
@@ -16,7 +16,7 @@ const PopperThing = ({
 }) => (
   <Popper
     targetToggle
-    closeOnOutsideClick={closeOnOutsideClick}
+    shouldCloseOnOutsideClick={shouldCloseOnOutsideClick}
     groupName={groupName}
     usePortal={!noPortal}
   >
