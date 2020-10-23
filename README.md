@@ -4,8 +4,6 @@
 
 Demos here: <a href="https://runfaj.github.io/react-nested-popper/" target="_blank">https://runfaj.github.io/react-nested-popper/</a>
 
-!!! Note: This library is in beta, so may be adjusted on functionality. Use at your own risk until V1 is released.
-
 ## What
 
 react-nested-popper is a react library based on V2 popper.js, but with added features created to handle a number of popper scenarios that other libraries fail to capture:
