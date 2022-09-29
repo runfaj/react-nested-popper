@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to loose [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2022-09-28
+### Changed
+- Updated build tools and demo dependencies to latest versions.
+- Updated webpack to output significantly smaller build.
+- Removed an unnecessary lodash dependency that could be handled natively.
+
 ## [1.0.0] - 2020-10-23
 ### Changed
 - Bumped to version 1 after months of testing with various scenarios.

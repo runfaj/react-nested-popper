@@ -2,35 +2,18 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
 const AutoPrefixerPlugin = require('autoprefixer');
 const CSSNanoPlugin = require('cssnano');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const ProgressPlugin = require('progress-webpack-plugin');
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-const { NODE_ENV = 'development' } = process.env;
-const useProductionBuild = NODE_ENV === 'production';
-
-module.exports = {
-  mode: useProductionBuild ? 'production' : 'development',
-  devtool: useProductionBuild ? 'source-map' : 'cheap-module-eval-source-map',
-  stats: 'errors-only',
+const config = {
   devServer: {
     compress: true,
-    contentBase: false,
     historyApiFallback: true,
     hot: true,
     port: 8765,
-    stats: {
-      assets: false,
-      children: false,
-      chunkModules: false,
-      chunks: false,
-      colors: true,
-      hash: false,
-      version: false,
-      modules: false,
-      warningsFilter: warning => !_.contains(warning, 'WARNING in chunk') && !_.contains(warning, 'Conflicting order between'),
-    },
   },
   entry: {
     lib: path.resolve(__dirname, 'src/index.js'),
@@ -42,32 +25,6 @@ module.exports = {
     pathinfo: false,
     libraryTarget: 'umd',
   },
-  optimization: (!useProductionBuild
-    ? {
-      removeAvailableModules: false,
-      removeEmptyChunks: false,
-      splitChunks: false,
-    }
-    : {
-      splitChunks: {
-        cacheGroups: {
-          peerDependencies: {
-            test: /[\\/]node_modules[\\/]react(-dom)?[\\/]/,
-          },
-        },
-      },
-      minimizer: [
-        new TerserPlugin({
-          sourceMap: true,
-          terserOptions: {
-            output: {
-              comments: false,
-            },
-          },
-        }),
-      ],
-    }
-  ),
   module: {
     rules: [
       {
@@ -81,7 +38,7 @@ module.exports = {
           {
             loader: MiniCssExtractPlugin.loader,
             options: {
-              hmr: !useProductionBuild,
+              esModule: false,
             },
           },
           {
@@ -97,12 +54,13 @@ module.exports = {
           {
             loader: 'postcss-loader',
             options: {
-              plugins: [
-                AutoPrefixerPlugin,
-                CSSNanoPlugin,
-              ],
+              postcssOptions: {
+                plugins: [
+                  AutoPrefixerPlugin,
+                  CSSNanoPlugin,
+                ],
+              },
               sourceMap: true,
-              modules: true,
             },
           },
           {
@@ -117,13 +75,40 @@ module.exports = {
   },
   plugins: [
     new CleanWebpackPlugin(),
-
+    new ProgressPlugin(true),
     new MiniCssExtractPlugin({
       filename: '[name].css',
     }),
-
     new HtmlWebpackPlugin({
       template: './demo/index.template.html',
     }),
+    // new BundleAnalyzerPlugin(),
   ],
+};
+
+module.exports = (env, argv) => {
+  if (argv.mode === 'development') {
+    config.devtool = 'eval-cheap-module-source-map';
+    config.optimization = {
+      removeAvailableModules: false,
+      removeEmptyChunks: false,
+      splitChunks: false,
+    };
+  } else {
+    config.devtool = 'source-map';
+    config.optimization = {
+      chunkIds: 'total-size',
+      minimize: true,
+      moduleIds: 'size',
+      splitChunks: {
+        cacheGroups: {
+          peerDependencies: {
+            test: /[\\/]node_modules[\\/]react(-dom)?[\\/]/,
+          },
+        },
+      },
+    };
+  }
+
+  return config;
 };

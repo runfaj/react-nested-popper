@@ -1,13 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 
-import Popper from './Popper';
-import Target from './Target';
-import Content from './Content';
-import Stack from './Stack';
-
-export {
-  Popper,
-  Target,
-  Content,
-  Stack,
-};
+export Popper from './Popper';
+export Target from './Target';
+export Content from './Content';
+export Stack from './Stack';

@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import _omit from 'lodash/omit';
 
 export default class Target extends React.Component {
   static className = 'react-nested-popper_Target';
@@ -11,25 +10,33 @@ export default class Target extends React.Component {
       so we enforce this component.
   */
   setRef(el) {
-    if (this.props.innerRef) {
-      this.props.innerRef(el);
+    const { innerRef, _targetRef } = this.props;
+    if (innerRef) {
+      innerRef(el);
     }
-    if (this.props._targetRef) {
-      this.props._targetRef(el);
+    if (_targetRef) {
+      _targetRef(el);
     }
   }
 
   render() {
-    const rest = _omit(this.props, Object.keys(Target.propTypes));
+    const {
+      children,
+      className,
+      _onClick,
+      innerRef,
+      _targetRef,
+      ...rest
+    } = this.props;
 
     return (
       <div
-        className={this.props.className}
+        className={className}
         ref={el => this.setRef(el)}
-        onClick={this.props._onClick}
+        onClick={_onClick}
         {...rest}
       >
-        {this.props.children}
+        {children}
       </div>
     );
   }
